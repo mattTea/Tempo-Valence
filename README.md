@@ -33,3 +33,11 @@ Link to spotify [api console](https://developer.spotify.com/documentation/web-ap
 Possible future link to song lyrics too with [Lyrics ovh](https://lyricsovh.docs.apiary.io/#)
     - Pretty basic
     - (No auth)
+
+------
+
+## Useful links
+
+https://github.com/thelinmichael/spotify-web-api-java
+
+https://medium.com/@elfanos/spotify-api-with-kotlin-react-and-redux-b1e23bb39b8c

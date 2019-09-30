@@ -14,9 +14,12 @@ object TrackSearchTest : Spek ({
 
     This and the below is wrong! ProductSearch is the http level at the entry to merchandiser api
     not the request out to ATG as I'm trying to assimilate here!
+
+    Maybe start similar to http4k-catchLensFailure project
+    Also look at AtgClient http requests in merchandiser -> look at atgProductFinder
     */
 
-    describe("track.search.trackSearch() with no arguments") {
+    describe("trackSearch() with no arguments") {
         it("should return SUCCESS") {
 //            val endpoint = trackSearch() // track.search.trackSearch should return a ContractRoute
 //            val response = endpoint(Request(Method.GET, " https://api.spotify.com"))
