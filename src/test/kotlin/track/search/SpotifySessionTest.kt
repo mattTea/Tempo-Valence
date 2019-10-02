@@ -7,15 +7,17 @@ import org.http4k.core.Status.Companion.OK
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
-object AuthenticateTest : Spek({
+object SpotifySessionTest : Spek({
 
     describe("getAccessToken()") {
+        val session = SpotifySession()
+
         it("should return OK (200)") {
-            assertThat(getAccessToken().status).isEqualTo(OK)
+            assertThat(session.getAccessToken().status).isEqualTo(OK)
         }
 
         it("should return body containing access_token String") {
-            assertThat(getAccessToken().bodyString()).contains("access_token")
+            assertThat(session.getAccessToken().bodyString()).contains("access_token")
         }
     }
 })
