@@ -16,7 +16,14 @@ internal class SpotifySession {
 
         val client = OkHttp()
 
+        println(client(request))
         return client(request)
     }
 }
 
+data class AccessToken(
+    val access_token: String,
+    val token_type: String,
+    val expires_in: Int,
+    val scope: String
+)
