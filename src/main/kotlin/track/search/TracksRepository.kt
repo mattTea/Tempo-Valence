@@ -3,13 +3,10 @@ package track.search
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.http4k.client.OkHttp
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
-import com.fasterxml.jackson.annotation.JsonProperty
-
 
 
 internal class TracksRepository(session: SpotifySession = SpotifySession()) {
@@ -40,32 +37,51 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         - deserialize each tracks response to a List<Track> -> only need trackIds
         */
 
-        val playlists = jacksonObjectMapper().readValue<Playlists>(playlists.bodyString())
+        val tracksLinks = deserializePlaylistResponse(playlists)
+            .items?.map { it.tracks.href }
 
-        val playlistId = ""
-        val url = "https://api.spotify.com/v1/playlists/$playlistId/tracks"
+        println(tracksLinks)
+
+        val client = OkHttp()
+
+        tracksLinks?.map { tracksLink ->
+            val response = client(Request(GET, "$tracksLink?access_token=$token&limit=50"))
+            // TODO get below line working!
+//            val trackIds = deserializeTracksResponse(response).items?.map { it.id }
+
+            println("response: $response")
+        }
 
         return ""
     }
 
-    internal fun deserializePlaylistResponse(playlistFinder: Response): Playlists {
+    internal fun deserializePlaylistResponse(playlists: Response): Playlists {
         return jacksonObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .readValue(playlistFinder.bodyString(),
+            .readValue(playlists.bodyString(),
                 Playlists::class.java
+            )
+    }
+
+    internal fun deserializeTracksResponse(tracks: Response): TrackList {
+        return jacksonObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+            .readValue(tracks.bodyString(),
+                TrackList::class.java
             )
     }
 }
 
-data class Playlists(
-    val playlists: List<Playlist>?
+internal data class Playlists(
+    val items: List<Playlist>?
 )
 
-data class Playlist(var tracksHref: String) {
+internal data class Playlist(val tracks: Tracks)
 
-    @JsonProperty("tracks")
-    private fun unpackNested(tracks: Map<String, Any>) {
-        this.tracksHref = tracks["href"] as String
-    }
-}
+internal data class Tracks(val href: String)
+
+internal data class TrackList(val items: List<Track>?)
+
+internal data class Track(val id: String)
