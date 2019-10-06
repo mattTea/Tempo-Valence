@@ -16,7 +16,7 @@ internal class SpotifySession {
 
         val client = OkHttp()
 
-        println(client(request))
+        println("Access Token response: ${client(request).body}")
         return client(request)
     }
 }

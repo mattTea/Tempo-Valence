@@ -8,7 +8,6 @@ import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
 
-
 internal class TracksRepository(session: SpotifySession = SpotifySession()) {
     val client = OkHttp()
 
@@ -22,10 +21,8 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         val url = "https://api.spotify.com/v1/users/mattthompson34/playlists?access_token=$token&limit=50"
         val request = Request(method = GET, uri = url)
 
-        println(client(request))
         return client(request)
     }
-
 
     internal fun getTracks(
         playlists: Response = playlistFinder(),
@@ -42,6 +39,12 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         return trackIds
     }
 
+    internal fun getAudioFeatures(trackIds: List<String> = getTracks()): List<TrackWithAudioFeatures> {
+        // GET https://api.spotify.com/v1/audio-features/{id}
+
+        return emptyList()
+    }
+
     private fun listTracksLinks(playlists: Response): List<String>? {
         return deserializePlaylistResponse(playlists)
             .items?.map { it.playlistTracksLink.href }
@@ -51,7 +54,8 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         return jacksonObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .readValue(playlists.bodyString(),
+            .readValue(
+                playlists.bodyString(),
                 Playlists::class.java
             )
     }
@@ -60,7 +64,8 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         return jacksonObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .readValue(tracks.bodyString(),
+            .readValue(
+                tracks.bodyString(),
                 TrackList::class.java
             )
     }
@@ -81,3 +86,9 @@ internal data class TrackList(
 internal data class TrackItem(val track: Track)
 
 internal data class Track(val id: String)
+
+internal data class TrackWithAudioFeatures(
+    val id: String,
+    val valence: Double,
+    val tempo: Double
+)

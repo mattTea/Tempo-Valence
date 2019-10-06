@@ -2,7 +2,9 @@ package track.search
 
 import assertk.assertThat
 import assertk.assertions.contains
+import assertk.assertions.containsAll
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
 import org.spekframework.spek2.Spek
@@ -39,7 +41,6 @@ object TracksRepositoryTest : Spek({
                 Playlist(tracks)
             ))
 
-//            println(jacksonObjectMapper().writeValueAsString(Playlists(listOf(Playlist(tracks)))))
             assertThat(tracksRepository.deserializePlaylistResponse(fakePlayListFinder)).isEqualTo(deserializedPlaylists)
         }
     }
@@ -66,22 +67,52 @@ object TracksRepositoryTest : Spek({
     }
 
     describe("getTracks()") {
-        // TODO should mock call and responses to tracksLinks
-        it("should return a list of track ids") {
-            val fakePlaylistFinderResponse = """{
+        // TODO should mock call and responses to individual tracksLinks
+        val fakePlaylistFinderResponse = """{
                 "items": [
                     {"playlistTracksLink": {"href": "https://api.spotify.com/v1/playlists/5SBdn3LK0VTTHx4daMNFCa/tracks"} },
                     {"playlistTracksLink": {"href": "https://api.spotify.com/v1/playlists/1UwtzP4yehAaJjEn1NQcOe/tracks"} }
                 ]
             }"""
 
-            val fakePlayListFinder = Response(OK)
-                .body(fakePlaylistFinderResponse)
-                .header("Content-Type", "application/json")
+        val fakePlaylistFinder = Response(OK)
+            .body(fakePlaylistFinderResponse)
+            .header("Content-Type", "application/json")
 
+        it("should return a list") {
+            assertThat(tracksRepository.getTracks(fakePlaylistFinder)).isInstanceOf(List::class.java)
+        }
+
+        it("should return list containing track ids") {
             val aTrackId = "7di4QTqNCZjX4JUFKhWQsr"
+            val anotherTrackId = "5M3xy3FI55IhNEDSiB2aTn"
+            assertThat(tracksRepository.getTracks(fakePlaylistFinder)).containsAll(aTrackId, anotherTrackId)
+        }
+    }
 
-            assertThat(tracksRepository.getTracks(fakePlayListFinder)).contains(aTrackId)
+    describe("getAudioFeatures()") {
+        val listOfTrackIds = listOf("7di4QTqNCZjX4JUFKhWQsr", "5M3xy3FI55IhNEDSiB2aTn")
+
+        it("should return a list") {
+            assertThat(tracksRepository.getAudioFeatures(listOfTrackIds)).isInstanceOf(List::class.java)
+        }
+
+        it("should return a list of TracksWithAudioFeatures") {
+            val track1 = TrackWithAudioFeatures(
+                id = "7di4QTqNCZjX4JUFKhWQsr",
+                valence = 0.878,
+                tempo = 117.024
+            )
+
+            val track2 = TrackWithAudioFeatures(
+                id = "5M3xy3FI55IhNEDSiB2aTn",
+                valence = 0.535,
+                tempo = 126.019
+            )
+
+            val tracksWithAudioFeatures = listOf(track1, track2)
+//            assertThat(tracksRepository.getAudioFeatures(listOfTrackIds)).isEqualTo(tracksWithAudioFeatures)
+            assertThat(tracksRepository.getAudioFeatures(listOfTrackIds)).isEqualTo(emptyList<TrackWithAudioFeatures>())
         }
     }
 })
