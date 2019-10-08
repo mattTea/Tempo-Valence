@@ -66,6 +66,30 @@ object TracksRepositoryTest : Spek({
         }
     }
 
+    describe("deserializeAudioFeaturesResponse()") {
+        it("should return the audio features for a track") {
+            val fakeAudioFeaturesResponse = """{
+                "danceability": 0.689,
+                "valence": 0.535,
+                "tempo": 126.019,
+                "id": "5M3xy3FI55IhNEDSiB2aTn"
+            }"""
+
+            val fakeAudioFeaturesFinder = Response(OK)
+                .body(fakeAudioFeaturesResponse)
+                .header("Content-Type", "application/json")
+
+            val trackWithAudioFeatures = TrackWithAudioFeatures(
+                id = "5M3xy3FI55IhNEDSiB2aTn",
+                valence = 0.535,
+                tempo = 126.019
+            )
+
+            assertThat(tracksRepository.deserializeAudioFeaturesResponse(fakeAudioFeaturesFinder))
+                .isEqualTo(trackWithAudioFeatures)
+        }
+    }
+
     describe("getTracks()") {
         // TODO should mock call and responses to individual tracksLinks
         val fakePlaylistFinderResponse = """{
@@ -111,8 +135,7 @@ object TracksRepositoryTest : Spek({
             )
 
             val tracksWithAudioFeatures = listOf(track1, track2)
-//            assertThat(tracksRepository.getAudioFeatures(listOfTrackIds)).isEqualTo(tracksWithAudioFeatures)
-            assertThat(tracksRepository.getAudioFeatures(listOfTrackIds)).isEqualTo(emptyList<TrackWithAudioFeatures>())
+            assertThat(tracksRepository.getAudioFeatures(listOfTrackIds)).isEqualTo(tracksWithAudioFeatures)
         }
     }
 })

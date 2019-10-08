@@ -9,6 +9,7 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 
 internal class TracksRepository(session: SpotifySession = SpotifySession()) {
+    // TODO refactor - lots of duplication in deserialisation methods and Track classes
     val client = OkHttp()
 
     private val token = jacksonObjectMapper()
@@ -28,21 +29,27 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         playlists: Response = playlistFinder(),
         tracksLinks: List<String>? = listTracksLinks(playlists)
     ): List<String> {
-        val client = OkHttp()
         val trackIds = mutableListOf<String>()
 
         tracksLinks?.map { tracksLink ->
             val response = client(Request(GET, "$tracksLink?access_token=$token&limit=50"))
-            deserializeTracksResponse(response).items?.map { trackIds.add(it.track.id) }
+            deserializeTracksResponse(response).items?.map { trackIds += it.track.id }
         }
 
         return trackIds
     }
 
     internal fun getAudioFeatures(trackIds: List<String> = getTracks()): List<TrackWithAudioFeatures> {
-        // GET https://api.spotify.com/v1/audio-features/{id}
+        val tracksWithAudioFeatures = mutableListOf<TrackWithAudioFeatures>()
 
-        return emptyList()
+        trackIds.map {trackId ->
+            val response = client(
+                Request(GET, "https://api.spotify.com/v1/audio-features/$trackId?access_token=$token")
+            )
+            tracksWithAudioFeatures += deserializeAudioFeaturesResponse(response)
+        }
+
+        return tracksWithAudioFeatures
     }
 
     private fun listTracksLinks(playlists: Response): List<String>? {
@@ -67,6 +74,16 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
             .readValue(
                 tracks.bodyString(),
                 TrackList::class.java
+            )
+    }
+
+    internal fun deserializeAudioFeaturesResponse(track: Response): TrackWithAudioFeatures {
+        return jacksonObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+            .readValue(
+                track.bodyString(),
+                TrackWithAudioFeatures::class.java
             )
     }
 }
