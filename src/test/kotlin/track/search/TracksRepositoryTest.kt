@@ -28,7 +28,7 @@ object TracksRepositoryTest : Spek({
         it("should return list of Playlist ids") {
             val fakePlaylistFinderResponse = """{
                 "items": [
-                    {"playlistTracksLink": {"href": "https://api.spotify.com/v1/playlists/5SBdn3LK0VTTHx4daMNFCa/tracks"} }
+                    {"tracks": {"href": "https://api.spotify.com/v1/playlists/5SBdn3LK0VTTHx4daMNFCa/tracks"} }
                 ]
             }"""
 
@@ -94,8 +94,8 @@ object TracksRepositoryTest : Spek({
         // TODO should mock call and responses to individual tracksLinks
         val fakePlaylistFinderResponse = """{
                 "items": [
-                    {"playlistTracksLink": {"href": "https://api.spotify.com/v1/playlists/5SBdn3LK0VTTHx4daMNFCa/tracks"} },
-                    {"playlistTracksLink": {"href": "https://api.spotify.com/v1/playlists/1UwtzP4yehAaJjEn1NQcOe/tracks"} }
+                    {"tracks": {"href": "https://api.spotify.com/v1/playlists/5SBdn3LK0VTTHx4daMNFCa/tracks"} },
+                    {"tracks": {"href": "https://api.spotify.com/v1/playlists/1UwtzP4yehAaJjEn1NQcOe/tracks"} }
                 ]
             }"""
 
@@ -118,7 +118,7 @@ object TracksRepositoryTest : Spek({
         val listOfTrackIds = listOf("7di4QTqNCZjX4JUFKhWQsr", "5M3xy3FI55IhNEDSiB2aTn")
 
         it("should return a list") {
-            assertThat(tracksRepository.getAudioFeatures(listOfTrackIds)).isInstanceOf(List::class.java)
+            assertThat(tracksRepository.getTracksWithAudioFeatures(listOfTrackIds)).isInstanceOf(List::class.java)
         }
 
         it("should return a list of TracksWithAudioFeatures") {
@@ -135,7 +135,7 @@ object TracksRepositoryTest : Spek({
             )
 
             val tracksWithAudioFeatures = listOf(track1, track2)
-            assertThat(tracksRepository.getAudioFeatures(listOfTrackIds)).isEqualTo(tracksWithAudioFeatures)
+            assertThat(tracksRepository.getTracksWithAudioFeatures(listOfTrackIds)).isEqualTo(tracksWithAudioFeatures)
         }
     }
 })

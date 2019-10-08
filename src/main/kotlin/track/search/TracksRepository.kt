@@ -39,7 +39,7 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         return trackIds
     }
 
-    internal fun getAudioFeatures(trackIds: List<String> = getTracks()): List<TrackWithAudioFeatures> {
+    internal fun getTracksWithAudioFeatures(trackIds: List<String> = getTracks()): List<TrackWithAudioFeatures> {
         val tracksWithAudioFeatures = mutableListOf<TrackWithAudioFeatures>()
 
         trackIds.map {trackId ->
@@ -54,7 +54,7 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
 
     private fun listTracksLinks(playlists: Response): List<String>? {
         return deserializePlaylistResponse(playlists)
-            .items?.map { it.playlistTracksLink.href }
+            .items?.map { it.tracks.href }
     }
 
     internal fun deserializePlaylistResponse(playlists: Response): Playlists {
@@ -92,7 +92,7 @@ internal data class Playlists(
     val items: List<Playlist>?
 )
 
-internal data class Playlist(val playlistTracksLink: PlaylistTracksLink)
+internal data class Playlist(val tracks: PlaylistTracksLink)
 
 internal data class PlaylistTracksLink(val href: String)
 
