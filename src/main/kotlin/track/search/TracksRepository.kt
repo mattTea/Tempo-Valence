@@ -19,7 +19,7 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         ).access_token
 
     internal fun playlistFinder(): Response {
-        val url = "https://api.spotify.com/v1/users/mattthompson34/playlists?access_token=$token&limit=50"
+        val url = "https://api.spotify.com/v1/users/mattthompson34/playlists?access_token=$token&limit=3"
         val request = Request(method = GET, uri = url)
 
         return client(request)
