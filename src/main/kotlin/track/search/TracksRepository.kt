@@ -47,7 +47,7 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
                 Request(GET, "https://api.spotify.com/v1/audio-features/$trackId?access_token=$token")
             )
             // Alternative could be... http4k filters -> interceptor in client to check for 429 and retry-after
-            Thread.sleep(75)
+            Thread.sleep(80)
             tracksWithAudioFeatures += deserializeAudioFeaturesResponse(response)
         }
 

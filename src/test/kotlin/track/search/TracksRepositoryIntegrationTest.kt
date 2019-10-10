@@ -10,10 +10,8 @@ object TracksRepositoryIntegrationTest : Spek({
         it("should return list of tracks with tempo and valence details", timeout = 250000) {
             val tracks = TracksRepository().getTracksWithAudioFeatures()
 
-            println("Tracks with audio features: $tracks")
-            println(tracks.size)
-
             assertThat(tracks).isInstanceOf(List::class.java)
+            println(tracks.size)
         }
     }
 })
