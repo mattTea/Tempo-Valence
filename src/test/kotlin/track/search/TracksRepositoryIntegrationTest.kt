@@ -7,12 +7,13 @@ import org.spekframework.spek2.style.specification.describe
 
 object TracksRepositoryIntegrationTest : Spek({
     describe("TracksRepository.getTracksWithAudioFeatures()") {
-        it("should return list of tracks with tempo and valence details", timeout = 30000) {
-            val repository = TracksRepository()
+        it("should return list of tracks with tempo and valence details", timeout = 250000) {
+            val tracks = TracksRepository().getTracksWithAudioFeatures()
 
-            println("Tracks with audio features: ${repository.getTracksWithAudioFeatures()}")
+            println("Tracks with audio features: $tracks")
+            println(tracks.size)
 
-            assertThat(repository.getTracksWithAudioFeatures()).isInstanceOf(List::class.java)
+            assertThat(tracks).isInstanceOf(List::class.java)
         }
     }
 })

@@ -19,7 +19,7 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         ).access_token
 
     internal fun playlistFinder(): Response {
-        val url = "https://api.spotify.com/v1/users/mattthompson34/playlists?access_token=$token&limit=3"
+        val url = "https://api.spotify.com/v1/users/mattthompson34/playlists?access_token=$token&limit=50"
         val request = Request(method = GET, uri = url)
 
         return client(request)
@@ -46,6 +46,8 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
             val response = client(
                 Request(GET, "https://api.spotify.com/v1/audio-features/$trackId?access_token=$token")
             )
+            // Alternative could be... http4k filters -> interceptor in client to check for 429 and retry-after
+            Thread.sleep(75)
             tracksWithAudioFeatures += deserializeAudioFeaturesResponse(response)
         }
 
