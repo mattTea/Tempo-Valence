@@ -45,3 +45,11 @@ where `access_token` is replaced by new access token
 3. (Possibly store this in datastore or cache)
 
 4. http request into my app will search based on valence and tempo 
+
+------
+
+## Ideas...
+
+1. Build api with with routes that hit specific RESTful endpoints
+    - GET /tracks
+    - GET /tracks?valence=<some_value>&tempo=<some_value> (or something similar -> can this be made more RESTful, modifying resources?) 
