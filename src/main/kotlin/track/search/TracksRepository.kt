@@ -18,8 +18,8 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
             AccessToken::class.java
         ).access_token
 
-    internal fun playlistFinder(): Response {
-        val url = "https://api.spotify.com/v1/users/mattthompson34/playlists?access_token=$token&limit=3"
+    internal fun playlistFinder(playlistLimit: Int = 2): Response {
+        val url = "https://api.spotify.com/v1/users/mattthompson34/playlists?access_token=$token&limit=$playlistLimit"
         val request = Request(method = GET, uri = url)
 
         return client(request)
@@ -27,12 +27,13 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
 
     internal fun getTracks(
         playlists: Response = playlistFinder(),
-        tracksLinks: List<String>? = listTracksLinks(playlists)
+        tracksLinks: List<String>? = listTracksLinks(playlists),
+        tracksLimit: Int = 3
     ): List<String> {
         val trackIds = mutableListOf<String>()
 
         tracksLinks?.map { tracksLink ->
-            val response = client(Request(GET, "$tracksLink?access_token=$token&limit=10"))
+            val response = client(Request(GET, "$tracksLink?access_token=$token&limit=$tracksLimit"))
             deserializeTracksResponse(response).items?.map { trackIds += it.track.id }
         }
 

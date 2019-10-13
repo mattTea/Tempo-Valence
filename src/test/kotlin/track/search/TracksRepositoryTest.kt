@@ -13,14 +13,16 @@ import org.spekframework.spek2.style.specification.describe
 object TracksRepositoryTest : Spek({
     // TODO should mock a session to pass in to TracksRepository() to isolate
     val tracksRepository = TracksRepository()
+    val playlistLimit = 2
+    val tracksLimit = 3
 
     describe("getPlaylists()") {
         it("should return OK (200)") {
-            assertThat(tracksRepository.playlistFinder().status).isEqualTo(OK)
+            assertThat(tracksRepository.playlistFinder(playlistLimit).status).isEqualTo(OK)
         }
 
         it("should return Playlists for user 'mattthompson34") {
-            assertThat(tracksRepository.playlistFinder().bodyString()).contains("mattthompson34")
+            assertThat(tracksRepository.playlistFinder(playlistLimit).bodyString()).contains("mattthompson34")
         }
     }
 
@@ -104,13 +106,15 @@ object TracksRepositoryTest : Spek({
             .header("Content-Type", "application/json")
 
         it("should return a list") {
-            assertThat(tracksRepository.getTracks(fakePlaylistFinder)).isInstanceOf(List::class.java)
+            assertThat(tracksRepository.getTracks(playlists = fakePlaylistFinder, tracksLimit = tracksLimit))
+                .isInstanceOf(List::class.java)
         }
 
         it("should return list containing track ids") {
             val aTrackId = "7di4QTqNCZjX4JUFKhWQsr"
             val anotherTrackId = "5M3xy3FI55IhNEDSiB2aTn"
-            assertThat(tracksRepository.getTracks(fakePlaylistFinder)).containsAll(aTrackId, anotherTrackId)
+            assertThat(tracksRepository.getTracks(playlists = fakePlaylistFinder, tracksLimit = tracksLimit))
+                .containsAll(aTrackId, anotherTrackId)
         }
     }
 
