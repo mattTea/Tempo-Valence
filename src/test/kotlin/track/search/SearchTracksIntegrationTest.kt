@@ -10,9 +10,9 @@ import org.http4k.core.Status.Companion.OK
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
-object GetTracksFunctionalTest : Spek({
+object SearchTracksIntegrationTest : Spek({
 
-    // TODO this client times out after 10 seconds -> find way to set longer for more tracks
+    // TODO client times out after 10 seconds so fails for large requests
     val client = OkHttp()
 
     val server = server(3001)
@@ -25,20 +25,15 @@ object GetTracksFunctionalTest : Spek({
         server.stop()
     }
 
-    // TODO write a stubbed spotify api so this can be tested against that (currently timing out when limits are at 50)
-    describe("GET /tracks") {
+    describe("GET /tracks endpoint") {
 
         it("should return 200 (OK)", timeout = 250000) {
-            val request = Request(GET, "http://localhost:${server.port()}/tracks")
-
             val response = client(Request(GET, "http://localhost:${server.port()}/tracks"))
-
             assertThat(response.status).isEqualTo(OK)
         }
 
         it("should return body string", timeout = 250000) {
             val response = client(Request(GET, "http://localhost:${server.port()}/tracks"))
-
             assertThat(response.bodyString()).contains("TrackWithAudioFeatures")
         }
     }
