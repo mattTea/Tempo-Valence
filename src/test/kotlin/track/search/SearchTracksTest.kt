@@ -12,14 +12,26 @@ import org.spekframework.spek2.style.specification.describe
 
 object SearchTracksTest : Spek({
 
+    val mockTrackWithAudioFeatures = mockk<TrackWithAudioFeatures>()
+
+    val mockTracksRepository = mockk<TracksRepository>()
+    every { mockTracksRepository.getTracksWithAudioFeatures() } returns listOf(mockTrackWithAudioFeatures)
+
+    val endpoint = searchTracks(mockTracksRepository)
+
+    describe("GET /") {
+        val response = endpoint(Request(GET, "/"))
+
+        it("should return OK (200)") {
+            assertThat(response.status).isEqualTo(OK)
+        }
+
+        it("should return welcome message") {
+            assertThat(response.bodyString()).isEqualTo("Welcome to TempoValence!")
+        }
+    }
+
     describe("GET /tracks") {
-
-        val mockTrackWithAudioFeatures = mockk<TrackWithAudioFeatures>()
-
-        val mockTracksRepository = mockk<TracksRepository>()
-        every { mockTracksRepository.getTracksWithAudioFeatures() } returns listOf(mockTrackWithAudioFeatures)
-
-        val endpoint = searchTracks(mockTracksRepository)
         val response = endpoint(Request(GET, "/tracks"))
 
         it("should return OK (200)") {

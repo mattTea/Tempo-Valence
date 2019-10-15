@@ -11,6 +11,10 @@ import org.http4k.routing.routes
 
 internal fun searchTracks(tracksRepository: TracksRepository): HttpHandler = CatchLensFailure.then(
     routes(
+        "/" bind GET to {
+            Response(OK).body("Welcome to TempoValence!")
+        },
+
         "/tracks" bind GET to {
             Response(OK).body(tracksRepository.getTracksWithAudioFeatures().toString())
         }

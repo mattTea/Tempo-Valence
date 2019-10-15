@@ -5,6 +5,26 @@ Search Spotify's api for music based on its Tempo (beats per minute) and Valence
 
 ------
 
+## To run app
+
+1. Clone repo to your local machine
+
+2. Navigate to root folder
+
+3. Run the following from the command line...
+
+    ```bash
+    ./gradlew run
+    ```
+    
+    or
+    
+    ```bash
+    gradle run
+    ```
+
+------
+
 ## Technologies I plan to use
 
 - Kotlin
