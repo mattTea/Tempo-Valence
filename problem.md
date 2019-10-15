@@ -52,4 +52,27 @@ where `access_token` is replaced by new access token
 
 1. Build api with with routes that hit specific RESTful endpoints
     - GET /tracks
-    - GET /tracks?valence=<some_value>&tempo=<some_value> (or something similar -> can this be made more RESTful, modifying resources?) 
+    - GET /tracks?valence=<some_value>&tempo=<some_value> (or something similar -> can this be made more RESTful, modifying resources?)
+    
+2. Way to run app locally
+    
+3. Deploy in GCP? (https://cloud.google.com/run/docs/quickstarts/build-and-deploy)
+    - Hosting of app (api) - containerisation of app and management in k8s?
+    - (https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app)
+    
+        To package and deploy your application on GKE, you must:
+        
+        - Package your app into a Docker image
+        - Run the container locally on your machine (optional)
+        - Upload the image to a registry
+        - Create a container cluster
+        - Deploy your app to the cluster
+        - Expose your app to the Internet
+        - Scale up your deployment
+        - Deploy a new version of your app
+    
+    - Authentication
+
+4. CI pipeline (gitlab)
+
+5. Authorise api

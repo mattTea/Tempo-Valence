@@ -15,7 +15,7 @@ object SearchTracksIntegrationTest : Spek({
     // TODO client times out after 10 seconds so fails for large requests
     val client = OkHttp()
 
-    val server = server(3001)
+    val server = server(0)
 
     beforeEachTest {
         server.start()
