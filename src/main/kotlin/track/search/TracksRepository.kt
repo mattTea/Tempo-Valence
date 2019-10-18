@@ -40,7 +40,10 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         return trackIds
     }
 
-    internal fun getTracksWithAudioFeatures(trackIds: List<String> = getTracks()): List<TrackWithAudioFeatures> {
+    internal fun getTracksWithAudioFeatures(
+        trackIds: List<String> = getTracks(),
+        valence: Double = 0.0
+    ): List<TrackWithAudioFeatures> {
         val tracksWithAudioFeatures = mutableListOf<TrackWithAudioFeatures>()
 
         trackIds.map {trackId ->
@@ -52,7 +55,8 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
             tracksWithAudioFeatures += deserializeAudioFeaturesResponse(response)
         }
 
-        return tracksWithAudioFeatures
+//        return jacksonObjectMapper().writeValueAsString(tracksWithAudioFeatures.filter { it.valence > valence })
+        return tracksWithAudioFeatures.filter { it.valence > valence }
     }
 
     private fun listTracksLinks(playlists: Response): List<String>? {

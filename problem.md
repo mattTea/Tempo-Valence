@@ -53,7 +53,7 @@ where `access_token` is replaced by new access token
 1. Build api with with routes that hit specific RESTful endpoints
     - GET /
     - GET /tracks
-    - GET /tracks?valence=<some_value>&tempo=<some_value> (or something similar -> can this be made more RESTful, modifying resources?)
+    - GET /tracks?valence=<some_value>&tempo=<some_value>
     
 2. Way to run app locally
     

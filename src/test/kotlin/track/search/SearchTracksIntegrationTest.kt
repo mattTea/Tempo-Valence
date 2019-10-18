@@ -2,6 +2,7 @@ package track.search
 
 import assertk.assertThat
 import assertk.assertions.contains
+import assertk.assertions.doesNotContain
 import assertk.assertions.isEqualTo
 import org.http4k.client.OkHttp
 import org.http4k.core.Method.GET
@@ -34,7 +35,7 @@ object SearchTracksIntegrationTest : Spek({
 
         it("should return body string", timeout = 250000) {
             val response = client(Request(GET, "http://localhost:${server.port()}/tracks"))
-            assertThat(response.bodyString()).contains("TrackWithAudioFeatures")
+            assertThat(response.bodyString()).contains("valence")
         }
     }
 })

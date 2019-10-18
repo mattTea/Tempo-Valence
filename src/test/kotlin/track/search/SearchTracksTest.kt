@@ -38,4 +38,12 @@ object SearchTracksTest : Spek({
             assertThat(response.status).isEqualTo(OK)
         }
     }
+
+//    describe("GET /tracks?valence=some-value") {
+//        val response = endpoint(Request(GET, "/tracks?valence=0.7"))
+//
+//        it("should call a method and do something...") {
+//
+//        }
+//    }
 })

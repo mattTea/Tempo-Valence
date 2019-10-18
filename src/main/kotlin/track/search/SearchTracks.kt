@@ -6,6 +6,7 @@ import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.then
 import org.http4k.filter.ServerFilters.CatchLensFailure
+import org.http4k.lens.Query
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 
@@ -15,8 +16,20 @@ internal fun searchTracks(tracksRepository: TracksRepository): HttpHandler = Cat
             Response(OK).body("Welcome to TempoValence!")
         },
 
-        "/tracks" bind GET to {
-            Response(OK).body(tracksRepository.getTracksWithAudioFeatures().toString())
+        "/tracks" bind GET to { request ->
+            val valence = Query.optional("valence")(request)
+
+//            Response(OK).body(tracksRepository.getTracksWithAudioFeatures().toString())
+            val tracks = tracksRepository.getTracksWithAudioFeatures(valence = valence?.toDouble() ?: 0.0)
+
+            println("tracks: $tracks")
+            Response(OK).body(tracks.toString())
+
+//            if (valence != null) {
+//                Response(OK).body(tracks.filter { it.valence > valence.toDouble() }.toString())
+//            } else {
+//                Response(OK).body(tracks.toString())
+//            }
         }
     )
 )
