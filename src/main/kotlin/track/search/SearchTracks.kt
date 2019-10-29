@@ -18,18 +18,9 @@ internal fun searchTracks(tracksRepository: TracksRepository): HttpHandler = Cat
 
         "/tracks" bind GET to { request ->
             val valence = Query.optional("valence")(request)
-
-//            Response(OK).body(tracksRepository.getTracksWithAudioFeatures().toString())
             val tracks = tracksRepository.getTracksWithAudioFeatures(valence = valence?.toDouble() ?: 0.0)
 
-            println("tracks: $tracks")
             Response(OK).body(tracks.toString())
-
-//            if (valence != null) {
-//                Response(OK).body(tracks.filter { it.valence > valence.toDouble() }.toString())
-//            } else {
-//                Response(OK).body(tracks.toString())
-//            }
         }
     )
 )

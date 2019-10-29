@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.http4k.client.OkHttp
+import org.http4k.core.HttpHandler
+import org.http4k.core.Method
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -18,11 +20,11 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
             AccessToken::class.java
         ).access_token
 
-    internal fun playlistFinder(playlistLimit: Int = 2): Response {
-        val url = "https://api.spotify.com/v1/users/mattthompson34/playlists?access_token=$token&limit=$playlistLimit"
-        val request = Request(method = GET, uri = url)
-
-        return client(request)
+    internal fun playlistFinder(playlistLimit: Int = 2, spotifyHttpHandler: HttpHandler = client): Response {
+        return spotifyHttpHandler(Request(
+            method = GET,
+            uri = "https://api.spotify.com/v1/users/mattthompson34/playlists?access_token=$token&limit=$playlistLimit"
+        ))
     }
 
     internal fun getTracks(

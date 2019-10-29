@@ -5,8 +5,10 @@ import assertk.assertions.contains
 import assertk.assertions.containsAll
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import org.http4k.core.Method
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
+import org.http4k.routing.bind
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
@@ -16,13 +18,46 @@ object TracksRepositoryTest : Spek({
     val playlistLimit = 2
     val tracksLimit = 3
 
-    describe("getPlaylists()") {
+    describe("playlistFinder()") {
+
+        val fakeSpotifyPlaylistsResponse = """"items": [{
+            "href": "https://api.spotify.com/v1/playlists/0mSxv5ujYkMyXsE8RYemS5",
+            "id": "0mSxv5ujYkMyXsE8RYemS5",
+            "name": "Prince Fatty – In the Viper's Shadow",
+            "owner": {
+              "display_name": "mattthompson34",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/user/mattthompson34"
+              },
+              "href": "https://api.spotify.com/v1/users/mattthompson34",
+              "id": "mattthompson34",
+              "type": "user",
+              "uri": "spotify:user:mattthompson34"
+            },
+            "tracks": {
+              "href": "https://api.spotify.com/v1/playlists/0mSxv5ujYkMyXsE8RYemS5/tracks",
+              "total": 10
+            }
+          }]"""
+
+        val fakeSpotify =
+            "/v1/users/mattthompson34/playlists/" bind Method.GET to {
+                Response(OK)
+                    .body(fakeSpotifyPlaylistsResponse)
+                    .header("Content-Type", "application/json")
+            }
+
         it("should return OK (200)") {
-            assertThat(tracksRepository.playlistFinder(playlistLimit).status).isEqualTo(OK)
+            assertThat(tracksRepository.playlistFinder(playlistLimit, fakeSpotify).status).isEqualTo(OK)
         }
 
         it("should return Playlists for user 'mattthompson34") {
-            assertThat(tracksRepository.playlistFinder(playlistLimit).bodyString()).contains("mattthompson34")
+            assertThat(
+                tracksRepository.playlistFinder(
+                    playlistLimit,
+                    fakeSpotify
+                ).bodyString()
+            ).contains("mattthompson34")
         }
     }
 
@@ -39,9 +74,11 @@ object TracksRepositoryTest : Spek({
                 .header("Content-Type", "application/json")
 
             val tracks = PlaylistTracksLink("https://api.spotify.com/v1/playlists/5SBdn3LK0VTTHx4daMNFCa/tracks")
-            val deserializedPlaylists = Playlists(listOf(
-                Playlist(tracks)
-            ))
+            val deserializedPlaylists = Playlists(
+                listOf(
+                    Playlist(tracks)
+                )
+            )
 
             assertThat(tracksRepository.deserializePlaylistResponse(fakePlayListFinder)).isEqualTo(deserializedPlaylists)
         }
@@ -121,25 +158,30 @@ object TracksRepositoryTest : Spek({
     describe("getAudioFeatures()") {
         val listOfTrackIds = listOf("7di4QTqNCZjX4JUFKhWQsr", "5M3xy3FI55IhNEDSiB2aTn")
 
+        val track1 = TrackWithAudioFeatures(
+            id = "7di4QTqNCZjX4JUFKhWQsr",
+            valence = 0.878,
+            tempo = 117.024
+        )
+
+        val track2 = TrackWithAudioFeatures(
+            id = "5M3xy3FI55IhNEDSiB2aTn",
+            valence = 0.535,
+            tempo = 126.019
+        )
+
+        val tracksWithAudioFeatures = listOf(track1, track2)
+
         it("should return a list") {
             assertThat(tracksRepository.getTracksWithAudioFeatures(listOfTrackIds)).isInstanceOf(List::class.java)
         }
 
         it("should return a list of TracksWithAudioFeatures") {
-            val track1 = TrackWithAudioFeatures(
-                id = "7di4QTqNCZjX4JUFKhWQsr",
-                valence = 0.878,
-                tempo = 117.024
-            )
-
-            val track2 = TrackWithAudioFeatures(
-                id = "5M3xy3FI55IhNEDSiB2aTn",
-                valence = 0.535,
-                tempo = 126.019
-            )
-
-            val tracksWithAudioFeatures = listOf(track1, track2)
             assertThat(tracksRepository.getTracksWithAudioFeatures(listOfTrackIds)).isEqualTo(tracksWithAudioFeatures)
+        }
+
+        it("should return a filtered list based on valence") {
+            assertThat(tracksRepository.getTracksWithAudioFeatures(listOfTrackIds, 0.7)).isEqualTo(listOf(track1))
         }
     }
 })

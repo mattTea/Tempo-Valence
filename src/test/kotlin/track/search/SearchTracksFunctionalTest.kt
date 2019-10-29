@@ -53,6 +53,9 @@ object SearchTracksFunctionalTest : Spek({
         fakeApiServer.stop()
     }
 
+    // this is just testing the fake server - make it call the tempo-valence api and mock the Spotify api response
+    // will need to have a mocked repository, which will have a mocked valence arg
+
     describe("GET /tracks") {
 
         it("should return 200 (OK)", timeout = 250000) {
