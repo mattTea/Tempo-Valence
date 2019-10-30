@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Status.Companion.OK
@@ -37,13 +38,9 @@ object SearchTracksTest : Spek({
         it("should return OK (200)") {
             assertThat(response.status).isEqualTo(OK)
         }
-    }
 
-//    describe("GET /tracks?valence=some-value") {
-//        val response = endpoint(Request(GET, "/tracks?valence=0.7"))
-//
-//        it("should call a method and do something...") {
-//
-//        }
-//    }
+        it("should call getTracksWithAudioFeatures()") {
+            verify { mockTracksRepository.getTracksWithAudioFeatures() }
+        }
+    }
 })

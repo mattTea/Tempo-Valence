@@ -57,7 +57,6 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
             tracksWithAudioFeatures += deserializeAudioFeaturesResponse(response)
         }
 
-//        return jacksonObjectMapper().writeValueAsString(tracksWithAudioFeatures.filter { it.valence > valence })
         return tracksWithAudioFeatures.filter { it.valence > valence }
     }
 

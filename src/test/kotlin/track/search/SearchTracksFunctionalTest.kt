@@ -4,8 +4,6 @@ import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.doesNotContain
 import assertk.assertions.isEqualTo
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.http4k.client.OkHttp
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
@@ -19,29 +17,27 @@ import org.http4k.server.asServer
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
+// TODO - this is not used, consider deleting
 object SearchTracksFunctionalTest : Spek({
 
-    val fakeApiResponse = """[
+    val fakeSpotifyResponse = """[
         |TrackWithAudioFeatures(id=2fyV7tqiCT2YU7KoKTu1hr, valence=0.778, tempo=77.262),
         |TrackWithAudioFeatures(id=0f7PA0ivwtkehbA5gitH8M, valence=0.912, tempo=134.897),
         |TrackWithAudioFeatures(id=11uFqlWnAlFMeQmjHKY38X, valence=0.0625, tempo=195.986)
         |]""".trimMargin()
 
-//    val body = jacksonObjectMapper().readValue(fakeApiResponse, ListOfTracksWithAudioFeatures::class.java)
-//    println(body)
-
-    val fakeApi =
+    val fakeSpotify =
         routes(
             "/fake/tracks" bind GET to { request ->
                 val valence = Query.optional("valence")(request)
 
                 Response(OK)
-                    .body(fakeApiResponse)
+                    .body(fakeSpotifyResponse)
                     .header("Content-Type", "application/json")
             }
         )
 
-    val fakeApiServer = fakeApi.asServer(Jetty(0))
+    val fakeApiServer = fakeSpotify.asServer(Jetty(0))
 
     val client = OkHttp()
 
@@ -53,18 +49,24 @@ object SearchTracksFunctionalTest : Spek({
         fakeApiServer.stop()
     }
 
-    // this is just testing the fake server - make it call the tempo-valence api and mock the Spotify api response
-    // will need to have a mocked repository, which will have a mocked valence arg
+    /*
+    this is just testing the fake server - make it call the tempo-valence api and mock the Spotify api response?
+    - Change the spotify URI env var like we do in -> DIGITAL_MERCH_ATG_URI of (Uri.of("http://127.0.0.1:${atg.port()}/fake"))
+    - so that we can fake the response?
+
+    Possibly also (or alternatively) need to have a mocked repository, which will have a mocked valence arg
+    - This is already being done in SearchTracksTest?
+    */
 
     describe("GET /tracks") {
 
-        it("should return 200 (OK)", timeout = 250000) {
+        xit("should return 200 (OK)", timeout = 250000) {
             val response = client(Request(GET, "http://localhost:${fakeApiServer.port()}/fake/tracks"))
 
             assertThat(response.status).isEqualTo(OK)
         }
 
-        it("should return body string", timeout = 250000) {
+        xit("should return body string", timeout = 250000) {
             val response = client(Request(GET, "http://localhost:${fakeApiServer.port()}/fake/tracks"))
 
             assertThat(response.bodyString()).contains("id=2fyV7tqiCT2YU7KoKTu1hr")
@@ -73,7 +75,7 @@ object SearchTracksFunctionalTest : Spek({
 
     describe("GET /tracks?valence=aValue") {
 
-        it("should return filtered list of tracks", timeout = 250000) {
+        xit("should return filtered list of tracks", timeout = 250000) {
             val response = client(
                 Request(GET, "http://localhost:${fakeApiServer.port()}/fake/tracks?valence=0.7")
             )
@@ -82,7 +84,3 @@ object SearchTracksFunctionalTest : Spek({
         }
     }
 })
-
-internal data class ListOfTracksWithAudioFeatures(
-    val enrichedTracks: List<TrackWithAudioFeatures>?
-)
