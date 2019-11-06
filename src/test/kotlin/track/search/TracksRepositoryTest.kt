@@ -48,14 +48,19 @@ object TracksRepositoryTest : Spek({
             }
 
         it("should return OK (200)") {
-            assertThat(tracksRepository.playlistFinder(playlistLimit, fakeSpotify).status).isEqualTo(OK)
+            assertThat(tracksRepository.playlistFinder(
+                playlistLimit = playlistLimit,
+                offset = 0,
+                spotifyHttpHandler = fakeSpotify
+            ).status).isEqualTo(OK)
         }
 
         it("should return Playlists for user 'mattthompson34") {
             assertThat(
                 tracksRepository.playlistFinder(
-                    playlistLimit,
-                    fakeSpotify
+                    playlistLimit = playlistLimit,
+                    offset = 0,
+                    spotifyHttpHandler = fakeSpotify
                 ).bodyString()
             ).contains("mattthompson34")
         }

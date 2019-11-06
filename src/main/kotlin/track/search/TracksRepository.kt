@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.http4k.client.OkHttp
 import org.http4k.core.HttpHandler
-import org.http4k.core.Method
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
+import kotlin.random.Random
 
 internal class TracksRepository(session: SpotifySession = SpotifySession()) {
     // TODO refactor - lots of duplication in deserialisation methods and Track classes
@@ -20,10 +20,14 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
             AccessToken::class.java
         ).access_token
 
-    internal fun playlistFinder(playlistLimit: Int = 2, spotifyHttpHandler: HttpHandler = client): Response {
+    internal fun playlistFinder(
+        playlistLimit: Int = 10,
+        offset: Int = Random.nextInt(0, 100),
+        spotifyHttpHandler: HttpHandler = client
+    ): Response {
         return spotifyHttpHandler(Request(
             method = GET,
-            uri = "https://api.spotify.com/v1/users/mattthompson34/playlists?access_token=$token&limit=$playlistLimit"
+            uri = "https://api.spotify.com/v1/users/mattthompson34/playlists?access_token=$token&limit=$playlistLimit&offset=$offset"
         ))
     }
 
@@ -60,7 +64,7 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         return tracksWithAudioFeatures.filter { it.valence > valence }
     }
 
-    private fun listTracksLinks(playlists: Response): List<String>? {
+    internal fun listTracksLinks(playlists: Response): List<String>? {
         return deserializePlaylistResponse(playlists)
             .items?.map { it.tracks.href }
     }

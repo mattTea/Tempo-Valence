@@ -11,7 +11,7 @@ object TracksRepositoryIntegrationTest : Spek({
             val tracksRepository = TracksRepository()
             val tracks = tracksRepository.getTracksWithAudioFeatures(
                 trackIds = tracksRepository.getTracks(
-                    playlists = tracksRepository.playlistFinder(playlistLimit = 2),
+                    playlists = tracksRepository.playlistFinder(playlistLimit = 2, offset = 0),
                     tracksLimit = 3
                 )
             )

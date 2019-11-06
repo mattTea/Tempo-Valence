@@ -55,9 +55,23 @@ where `access_token` is replaced by new access token
     - GET /tracks
     - GET /tracks?valence=<some_value>&tempo=<some_value>
     
-2. Way to run app locally
+2. Way to run app locally...
+
+```bash
+./gradle run
+```
     
-3. Deploy in GCP? (https://cloud.google.com/run/docs/quickstarts/build-and-deploy)
+3. New (4th Nov 2019) usage before continuing with hosting, etc
+- Enter a valence value as at present
+- `playlistFinder()` (could randomise an offset to call nth 25 playlists)
+- `getTracks()` listTracksLinks (could return randomised 100 tracks) 
+- `getTracksWithAudioFeatures()` (could return 3 random tracks over valence value)
+    - also return names of tracks, artists, valence values and tempo for each
+    
+- FUTURE: return a play button to hear the tracks
+
+
+4. Deploy in GCP? (https://cloud.google.com/run/docs/quickstarts/build-and-deploy)
     - Hosting of app (api) - containerisation of app and management in k8s?
     - (https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app)
     
@@ -74,6 +88,6 @@ where `access_token` is replaced by new access token
     
     - Authentication
 
-4. CI pipeline (gitlab)
+5. CI pipeline (gitlab)
 
-5. Authorise api
+6. Authorise api

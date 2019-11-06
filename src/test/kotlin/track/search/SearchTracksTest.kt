@@ -16,7 +16,10 @@ object SearchTracksTest : Spek({
     val mockTrackWithAudioFeatures = mockk<TrackWithAudioFeatures>()
 
     val mockTracksRepository = mockk<TracksRepository>()
-    every { mockTracksRepository.getTracksWithAudioFeatures() } returns listOf(mockTrackWithAudioFeatures)
+    every { mockTracksRepository.listTracksLinks(any()) } returns mockk()
+    every { mockTracksRepository.getTracks(any(), any(), any())} returns mockk()
+    every { mockTracksRepository.playlistFinder(any(), any(), any()) } returns mockk()
+    every { mockTracksRepository.getTracksWithAudioFeatures(any(), any()) } returns listOf(mockTrackWithAudioFeatures)
 
     val endpoint = searchTracks(mockTracksRepository)
 
@@ -40,7 +43,7 @@ object SearchTracksTest : Spek({
         }
 
         it("should call getTracksWithAudioFeatures()") {
-            verify { mockTracksRepository.getTracksWithAudioFeatures() }
+            verify { mockTracksRepository.getTracksWithAudioFeatures(any(), any()) }
         }
     }
 })
