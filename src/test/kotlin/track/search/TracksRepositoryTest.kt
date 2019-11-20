@@ -5,7 +5,7 @@ import assertk.assertions.contains
 import assertk.assertions.containsAll
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import org.http4k.core.Method
+import org.http4k.core.Method.GET
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
 import org.http4k.routing.bind
@@ -41,7 +41,7 @@ object TracksRepositoryTest : Spek({
           }]"""
 
         val fakeSpotify =
-            "/v1/users/mattthompson34/playlists/" bind Method.GET to {
+            "/v1/users/mattthompson34/playlists/" bind GET to {
                 Response(OK)
                     .body(fakeSpotifyPlaylistsResponse)
                     .header("Content-Type", "application/json")
@@ -79,11 +79,8 @@ object TracksRepositoryTest : Spek({
                 .header("Content-Type", "application/json")
 
             val tracks = PlaylistTracksLink("https://api.spotify.com/v1/playlists/5SBdn3LK0VTTHx4daMNFCa/tracks")
-            val deserializedPlaylists = Playlists(
-                listOf(
-                    Playlist(tracks)
-                )
-            )
+
+            val deserializedPlaylists = Playlists(listOf(Playlist(tracks)))
 
             assertThat(tracksRepository.deserializePlaylistResponse(fakePlayListFinder)).isEqualTo(deserializedPlaylists)
         }
@@ -148,19 +145,22 @@ object TracksRepositoryTest : Spek({
             .header("Content-Type", "application/json")
 
         it("should return a list") {
-            assertThat(tracksRepository.getTracks(playlists = fakePlaylistFinder, tracksLimit = tracksLimit))
-                .isInstanceOf(List::class.java)
+            assertThat(tracksRepository.getTracks(
+                playlists = fakePlaylistFinder,
+                tracksLimit = tracksLimit
+            )).isInstanceOf(List::class.java)
         }
 
         it("should return list containing track ids") {
             val aTrackId = "7di4QTqNCZjX4JUFKhWQsr"
             val anotherTrackId = "5M3xy3FI55IhNEDSiB2aTn"
+
             assertThat(tracksRepository.getTracks(playlists = fakePlaylistFinder, tracksLimit = tracksLimit))
                 .containsAll(aTrackId, anotherTrackId)
         }
     }
 
-    describe("getAudioFeatures()") {
+    describe("getTracksWithAudioFeatures()") {
         val listOfTrackIds = listOf("7di4QTqNCZjX4JUFKhWQsr", "5M3xy3FI55IhNEDSiB2aTn")
 
         val track1 = TrackWithAudioFeatures(
@@ -188,5 +188,24 @@ object TracksRepositoryTest : Spek({
         it("should return a filtered list based on valence") {
             assertThat(tracksRepository.getTracksWithAudioFeatures(listOfTrackIds, 0.7)).isEqualTo(listOf(track1))
         }
+    }
+
+    describe("enrichTracks()") {
+        val trackId = "5M3xy3FI55IhNEDSiB2aTn"
+
+        it("should return a String") {
+            assertThat(tracksRepository.enrichTracks(trackId)).isInstanceOf(String::class.java)
+        }
+
+        it("should return track name") {
+            assertThat(tracksRepository.enrichTracks(trackId)).contains("trackName")
+        }
+
+//        it("should return track name of Bango") {
+//            assertThat(tracksRepository.enrichTracks(trackId)).contains("Bango")
+//        }
+
+        // all the above tests should have a fakeSpotify to call against (and a fake response)
+        // a spotifyHttpHandler should be injected into each of the repository methods that call spotify (as per playlistFinder) to enable these fakes
     }
 })

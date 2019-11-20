@@ -34,12 +34,13 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
     internal fun getTracks(
         playlists: Response = playlistFinder(),
         tracksLinks: List<String>? = listTracksLinks(playlists),
-        tracksLimit: Int = 3
+        tracksLimit: Int = 3,
+        spotifyHttpHandler: HttpHandler = client
     ): List<String> {
         val trackIds = mutableListOf<String>()
 
         tracksLinks?.map { tracksLink ->
-            val response = client(Request(GET, "$tracksLink?access_token=$token&limit=$tracksLimit"))
+            val response = spotifyHttpHandler(Request(GET, "$tracksLink?access_token=$token&limit=$tracksLimit"))
             deserializeTracksResponse(response).items?.map { trackIds += it.track.id }
         }
 
@@ -56,12 +57,34 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
             val response = client(
                 Request(GET, "https://api.spotify.com/v1/audio-features/$trackId?access_token=$token")
             )
-            // Alternative could be... http4k filters -> interceptor in client to check for 429 and retry-after
-            Thread.sleep(80)
             tracksWithAudioFeatures += deserializeAudioFeaturesResponse(response)
         }
 
         return tracksWithAudioFeatures.filter { it.valence > valence }
+    }
+
+    // make call to "https://api.spotify.com/v1/tracks/$trackId" for first one
+    // get item.name & item.artists[0].name and combine into TrackWithAudioFeatures class (or new class)
+    // create a new function to do this...
+    // getTracks & getTracksWithAudioFeatures probably just return one track to inject here
+    internal fun enrichTracks(
+        trackId: String,
+        spotifyHttpHandler: HttpHandler = client
+    ): String {
+        val response = spotifyHttpHandler(Request(
+            method = GET,
+            uri = "https://api.spotify.com/v1/tracks/$trackId?access_token=$token"
+        ))
+
+        deserializeEnrichedTrackResponse(response)
+        return "trackName"
+
+        // hit this "https://api.spotify.com/v1/tracks/$trackId?access_token=$token"
+        // and return 'artists[0].name' & 'name'
+    }
+
+    internal fun deserializeEnrichedTrackResponse(trackDetail: Response) {
+        // TODO complete this
     }
 
     internal fun listTracksLinks(playlists: Response): List<String>? {

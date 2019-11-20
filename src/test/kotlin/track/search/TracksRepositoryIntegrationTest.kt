@@ -17,7 +17,6 @@ object TracksRepositoryIntegrationTest : Spek({
             )
 
             assertThat(tracks).isInstanceOf(List::class.java)
-            println(tracks.size)
         }
     }
 })
