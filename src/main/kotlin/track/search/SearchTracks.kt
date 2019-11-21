@@ -5,6 +5,7 @@ import org.http4k.core.Method.GET
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.then
+import org.http4k.core.with
 import org.http4k.filter.ServerFilters.CatchLensFailure
 import org.http4k.lens.Query
 import org.http4k.routing.bind
@@ -20,7 +21,7 @@ internal fun searchTracks(tracksRepository: TracksRepository): HttpHandler = Cat
             val valence = Query.optional("valence")(request)
             val tracks = tracksRepository.getTracksWithAudioFeatures(valence = valence?.toDouble() ?: 0.0)
 
-            Response(OK).body(tracks.toString())
+            Response(OK).with(TracksWithAudioFeatures.format of TracksWithAudioFeatures(tracks))
         }
     )
 )

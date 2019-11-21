@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.http4k.client.OkHttp
+import org.http4k.core.Body
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
+import org.http4k.format.Jackson.auto
 import kotlin.random.Random
 
 internal class TracksRepository(session: SpotifySession = SpotifySession()) {
@@ -144,3 +146,9 @@ internal data class TrackWithAudioFeatures(
     val valence: Double,
     val tempo: Double
 )
+
+internal data class TracksWithAudioFeatures(val tracksWithAudioFeatures: List<TrackWithAudioFeatures>) {
+    companion object {
+        val format = Body.auto<TracksWithAudioFeatures>().toLens()
+    }
+}

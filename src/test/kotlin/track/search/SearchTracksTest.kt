@@ -14,6 +14,9 @@ import org.spekframework.spek2.style.specification.describe
 object SearchTracksTest : Spek({
 
     val mockTrackWithAudioFeatures = mockk<TrackWithAudioFeatures>()
+    every { mockTrackWithAudioFeatures.id } returns "1"
+    every { mockTrackWithAudioFeatures.valence } returns 0.0
+    every { mockTrackWithAudioFeatures.tempo } returns 100.0
 
     val mockTracksRepository = mockk<TracksRepository>()
     every { mockTracksRepository.listTracksLinks(any()) } returns mockk()
