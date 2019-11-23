@@ -65,30 +65,6 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         return tracksWithAudioFeatures.filter { it.valence > valence }
     }
 
-    // make call to "https://api.spotify.com/v1/tracks/$trackId" for first one
-    // get item.name & item.artists[0].name and combine into TrackWithAudioFeatures class (or new class)
-    // create a new function to do this...
-    // getTracks & getTracksWithAudioFeatures probably just return one track to inject here
-    internal fun enrichTracks(
-        trackId: String,
-        spotifyHttpHandler: HttpHandler = client
-    ): String {
-        val response = spotifyHttpHandler(Request(
-            method = GET,
-            uri = "https://api.spotify.com/v1/tracks/$trackId?access_token=$token"
-        ))
-
-        deserializeEnrichedTrackResponse(response)
-        return "trackName"
-
-        // hit this "https://api.spotify.com/v1/tracks/$trackId?access_token=$token"
-        // and return 'artists[0].name' & 'name'
-    }
-
-    internal fun deserializeEnrichedTrackResponse(trackDetail: Response) {
-        // TODO complete this
-    }
-
     internal fun listTracksLinks(playlists: Response): List<String>? {
         return deserializePlaylistResponse(playlists)
             .items?.map { it.tracks.href }

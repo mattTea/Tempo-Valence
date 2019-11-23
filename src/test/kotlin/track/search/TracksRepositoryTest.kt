@@ -189,23 +189,4 @@ object TracksRepositoryTest : Spek({
             assertThat(tracksRepository.getTracksWithAudioFeatures(listOfTrackIds, 0.7)).isEqualTo(listOf(track1))
         }
     }
-
-    describe("enrichTracks()") {
-        val trackId = "5M3xy3FI55IhNEDSiB2aTn"
-
-        it("should return a String") {
-            assertThat(tracksRepository.enrichTracks(trackId)).isInstanceOf(String::class.java)
-        }
-
-        it("should return track name") {
-            assertThat(tracksRepository.enrichTracks(trackId)).contains("trackName")
-        }
-
-//        it("should return track name of Bango") {
-//            assertThat(tracksRepository.enrichTracks(trackId)).contains("Bango")
-//        }
-
-        // all the above tests should have a fakeSpotify to call against (and a fake response)
-        // a spotifyHttpHandler should be injected into each of the repository methods that call spotify (as per playlistFinder) to enable these fakes
-    }
 })

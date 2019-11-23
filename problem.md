@@ -68,6 +68,19 @@ where `access_token` is replaced by new access token
 - `getTracksWithAudioFeatures()` (could return 3 random tracks over valence value)
     - also return names of tracks, artists, valence values and tempo for each
     
+    - make call to "https://api.spotify.com/v1/tracks/$trackId" for first one
+    - get item.name & item.artists[0].name and combine into TrackWithAudioFeatures class (or new class)
+    - create a new function to do this...
+        - getTracks & getTracksWithAudioFeatures probably just return one track to inject here
+        
+        - hit this "https://api.spotify.com/v1/tracks/$trackId?access_token=$token"
+            - and return 'artists[0].name' & 'name'
+    
+    
+23.11.19 - IDEA I shouldn't be injecting each repository method into the next in a sequence, but keeping them as isolated methods with a single 'endpoint' function that uses them all.
+- I can then test the in isolation, then mock them all when I test the endpoint function    
+
+
 - FUTURE: return a play button to hear the tracks
 
 
