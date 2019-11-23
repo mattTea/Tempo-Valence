@@ -38,27 +38,27 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         tracksLinks: List<String>? = listTracksLinks(playlists),
         tracksLimit: Int = 3,
         spotifyHttpHandler: HttpHandler = client
-    ): List<String> {
-        val trackIds = mutableListOf<String>()
+    ): List<Track> {
+        val tracks = mutableListOf<Track>()
 
         tracksLinks?.map { tracksLink ->
             val response = spotifyHttpHandler(Request(GET, "$tracksLink?access_token=$token&limit=$tracksLimit"))
-            deserializeTracksResponse(response).items?.map { trackIds += it.track.id }
+            deserializeTracksResponse(response).items?.map { tracks += Track(it.track.id, it.track.name) }
         }
 
-        return trackIds
+        return tracks
     }
 
     internal fun getTracksWithAudioFeatures(
-        trackIds: List<String> = getTracks(),
+        tracks: List<Track> = getTracks(),
         valence: Double = 0.0,
         spotifyHttpHandler: HttpHandler = client
     ): List<TrackWithAudioFeatures> {
         val tracksWithAudioFeatures = mutableListOf<TrackWithAudioFeatures>()
 
-        trackIds.map {trackId ->
+        tracks.map { track ->
             val response = spotifyHttpHandler(
-                Request(GET, "https://api.spotify.com/v1/audio-features/$trackId?access_token=$token")
+                Request(GET, "https://api.spotify.com/v1/audio-features/${track.id}?access_token=$token")
             )
             tracksWithAudioFeatures += deserializeAudioFeaturesResponse(response)
         }
@@ -116,7 +116,10 @@ internal data class TrackList(
 
 internal data class TrackItem(val track: Track)
 
-internal data class Track(val id: String)
+internal data class Track(
+    val id: String,
+    val name: String
+)
 
 internal data class TrackWithAudioFeatures(
     val id: String,

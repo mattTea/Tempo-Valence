@@ -1,14 +1,10 @@
 package track.search
 
 import assertk.assertThat
-import assertk.assertions.contains
-import assertk.assertions.containsAll
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import org.http4k.core.Method.GET
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
-import org.http4k.routing.bind
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
@@ -43,59 +39,68 @@ object TracksRepositoryTest : Spek({
     }
 
     describe("getTracks()") {
-        val fakePlaylistFinderResponse = """{
-                "items": [
-                    {"tracks": {"href": "http://firstPlaylistTracks"} },
-                    {"tracks": {"href": "http://secondPlaylistTracks"} }
-                ]
-            }"""
+        val fakePlaylistFinderResponse = """{"items": [{"tracks": {"href": "http://playlistTracks"}}]}"""
 
         val fakePlaylistFinder = Response(OK)
             .body(fakePlaylistFinderResponse)
             .header("Content-Type", "application/json")
 
-        val fakeSpotifyGetTracksResponse = """{"items": [{"track": {"id": "trackId"}}]}"""
+        val fakeSpotifyGetTracksResponseWithNameAndArtist = """{
+          "items": [
+            {
+              "track": {
+                "artists": [
+                  {
+                    "name": "artistName"
+                  }
+                ],
+                "id": "trackId",
+                "name": "trackName"
+              }
+            }
+          ]
+        }"""
 
         it("should return a list") {
             assertThat(tracksRepository.getTracks(
                 playlists = fakePlaylistFinder,
                 tracksLimit = tracksLimit,
-                spotifyHttpHandler = { Response(OK).body(fakeSpotifyGetTracksResponse) }
+                spotifyHttpHandler = { Response(OK).body(fakeSpotifyGetTracksResponseWithNameAndArtist) }
             )).isInstanceOf(List::class.java)
         }
 
-        it("should return list containing track ids") {
+        it("should return list of tracks with trackId with trackName") {
             assertThat(tracksRepository.getTracks(
                 playlists = fakePlaylistFinder,
                 tracksLimit = tracksLimit,
-                spotifyHttpHandler = { Response(OK).body(fakeSpotifyGetTracksResponse) }
-            )).containsAll("trackId", "trackId")
+                spotifyHttpHandler = { Response(OK).body(fakeSpotifyGetTracksResponseWithNameAndArtist) }
+            )).isEqualTo(listOf(Track("trackId", "trackName")))
         }
     }
 
     describe("getTracksWithAudioFeatures()") {
-        val fakeSpotifyAudioFeaturesResponse = """{"id":"firstTrackId","valence":0.8,"tempo":100.0}"""
+        val fakeSpotifyAudioFeaturesResponse = """{"id":"trackId","valence":0.8,"tempo":100.0}"""
 
-        val listOfTrackIds = listOf("firstTrackId")
+        val listOfTracks = listOf(Track("trackId", "trackName"))
 
-        val track1 = TrackWithAudioFeatures(
-            id = "firstTrackId",
+        val trackWithAudioFeatures = TrackWithAudioFeatures(
+            id = "trackId",
             valence = 0.8,
             tempo = 100.0
         )
 
-        val tracksWithAudioFeatures = listOf(track1)
+        val tracksWithAudioFeatures = listOf(trackWithAudioFeatures)
 
         it("should return a list") {
             assertThat(tracksRepository.getTracksWithAudioFeatures(
-                trackIds = listOfTrackIds,
+                tracks = listOfTracks,
                 spotifyHttpHandler = { Response(OK).body(fakeSpotifyAudioFeaturesResponse) }
             )).isInstanceOf(List::class.java)
         }
 
         it("should return a list of TracksWithAudioFeatures") {
             assertThat(tracksRepository.getTracksWithAudioFeatures(
-                trackIds = listOfTrackIds,
+                tracks = listOfTracks,
                 spotifyHttpHandler = { Response(OK).body(fakeSpotifyAudioFeaturesResponse) }
             )).isEqualTo(tracksWithAudioFeatures)
         }
@@ -103,11 +108,11 @@ object TracksRepositoryTest : Spek({
         it("should return a filtered list based on valence") {
             assertThat(
                 tracksRepository.getTracksWithAudioFeatures(
-                    trackIds = listOfTrackIds,
+                    tracks = listOfTracks,
                     spotifyHttpHandler = { Response(OK).body(fakeSpotifyAudioFeaturesResponse) },
                     valence = 0.7
                 )
-            ).isEqualTo(listOf(track1))
+            ).isEqualTo(listOf(trackWithAudioFeatures))
         }
     }
 
@@ -135,8 +140,8 @@ object TracksRepositoryTest : Spek({
         it("should return a list of Track ids") {
             val fakeTracksFinderResponse = """{
                 "items": [
-                    {"track": {"id": "7di4QTqNCZjX4JUFKhWQsr"} },
-                    {"track": {"id": "5M3xy3FI55IhNEDSiB2aTn"} }
+                    {"track": {"id": "firstTrackId", "name": "firstTrackName"} },
+                    {"track": {"id": "secondTrackId", "name": "secondTrackName"} }
                 ]
             }"""
 
@@ -144,8 +149,8 @@ object TracksRepositoryTest : Spek({
                 .body(fakeTracksFinderResponse)
                 .header("Content-Type", "application/json")
 
-            val firstTrack = TrackItem(Track("7di4QTqNCZjX4JUFKhWQsr"))
-            val secondTrack = TrackItem(Track("5M3xy3FI55IhNEDSiB2aTn"))
+            val firstTrack = TrackItem(Track("firstTrackId", "firstTrackName"))
+            val secondTrack = TrackItem(Track("secondTrackId", "secondTrackName"))
             val deserializedTracks = TrackList(listOf(firstTrack, secondTrack))
 
             assertThat(tracksRepository.deserializeTracksResponse(fakeTracksFinder)).isEqualTo(deserializedTracks)
@@ -155,10 +160,9 @@ object TracksRepositoryTest : Spek({
     describe("deserializeAudioFeaturesResponse()") {
         it("should return the audio features for a track") {
             val fakeAudioFeaturesResponse = """{
-                "danceability": 0.689,
-                "valence": 0.535,
-                "tempo": 126.019,
-                "id": "5M3xy3FI55IhNEDSiB2aTn"
+                "valence": 0.5,
+                "tempo": 125.0,
+                "id": "trackId"
             }"""
 
             val fakeAudioFeaturesFinder = Response(OK)
@@ -166,9 +170,9 @@ object TracksRepositoryTest : Spek({
                 .header("Content-Type", "application/json")
 
             val trackWithAudioFeatures = TrackWithAudioFeatures(
-                id = "5M3xy3FI55IhNEDSiB2aTn",
-                valence = 0.535,
-                tempo = 126.019
+                id = "trackId",
+                valence = 0.5,
+                tempo = 125.0
             )
 
             assertThat(tracksRepository.deserializeAudioFeaturesResponse(fakeAudioFeaturesFinder))

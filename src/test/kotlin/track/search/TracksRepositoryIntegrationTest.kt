@@ -7,10 +7,10 @@ import org.spekframework.spek2.style.specification.describe
 
 object TracksRepositoryIntegrationTest : Spek({
     describe("TracksRepository.getTracksWithAudioFeatures()") {
-        it("should return list of tracks with tempo and valence details", timeout = 250000) {
+        it("should return list of tracks with tempo and valence details") {
             val tracksRepository = TracksRepository()
             val tracks = tracksRepository.getTracksWithAudioFeatures(
-                trackIds = tracksRepository.getTracks(
+                tracks = tracksRepository.getTracks(
                     playlists = tracksRepository.playlistFinder(playlistLimit = 2, offset = 0),
                     tracksLimit = 3
                 )
