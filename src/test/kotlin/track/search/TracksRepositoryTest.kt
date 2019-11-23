@@ -83,13 +83,14 @@ object TracksRepositoryTest : Spek({
 
         val listOfTracks = listOf(Track("trackId", "trackName"))
 
-        val trackWithAudioFeatures = TrackWithAudioFeatures(
+        val enrichedTrackWithAudioFeatures = EnrichedTrackWithAudioFeatures(
             id = "trackId",
+            name = "trackName",
             valence = 0.8,
             tempo = 100.0
         )
 
-        val tracksWithAudioFeatures = listOf(trackWithAudioFeatures)
+        val enrichedTracksWithAudioFeatures = listOf(enrichedTrackWithAudioFeatures)
 
         it("should return a list") {
             assertThat(tracksRepository.getTracksWithAudioFeatures(
@@ -98,11 +99,11 @@ object TracksRepositoryTest : Spek({
             )).isInstanceOf(List::class.java)
         }
 
-        it("should return a list of TracksWithAudioFeatures") {
+        it("should return a list of EnrichedTracksWithAudioFeatures") {
             assertThat(tracksRepository.getTracksWithAudioFeatures(
                 tracks = listOfTracks,
                 spotifyHttpHandler = { Response(OK).body(fakeSpotifyAudioFeaturesResponse) }
-            )).isEqualTo(tracksWithAudioFeatures)
+            )).isEqualTo(enrichedTracksWithAudioFeatures)
         }
 
         it("should return a filtered list based on valence") {
@@ -112,7 +113,15 @@ object TracksRepositoryTest : Spek({
                     spotifyHttpHandler = { Response(OK).body(fakeSpotifyAudioFeaturesResponse) },
                     valence = 0.7
                 )
-            ).isEqualTo(listOf(trackWithAudioFeatures))
+            ).isEqualTo(listOf(enrichedTrackWithAudioFeatures))
+
+            assertThat(
+                tracksRepository.getTracksWithAudioFeatures(
+                    tracks = listOfTracks,
+                    spotifyHttpHandler = { Response(OK).body(fakeSpotifyAudioFeaturesResponse) },
+                    valence = 0.9
+                )
+            ).isEqualTo(emptyList<EnrichedTrackWithAudioFeatures>())
         }
     }
 
@@ -120,7 +129,7 @@ object TracksRepositoryTest : Spek({
         it("should return list of Playlist ids") {
             val fakePlaylistFinderResponse = """{
                 "items": [
-                    {"tracks": {"href": "https://api.spotify.com/v1/playlists/5SBdn3LK0VTTHx4daMNFCa/tracks"} }
+                    {"tracks": {"href": "http://aPlaylist/tracks"} }
                 ]
             }"""
 
@@ -128,7 +137,7 @@ object TracksRepositoryTest : Spek({
                 .body(fakePlaylistFinderResponse)
                 .header("Content-Type", "application/json")
 
-            val tracks = PlaylistTracksLink("https://api.spotify.com/v1/playlists/5SBdn3LK0VTTHx4daMNFCa/tracks")
+            val tracks = PlaylistTracksLink("http://aPlaylist/tracks")
 
             val deserializedPlaylists = Playlists(listOf(Playlist(tracks)))
 

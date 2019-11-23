@@ -21,7 +21,7 @@ internal fun searchTracks(tracksRepository: TracksRepository): HttpHandler = Cat
             val valence = Query.optional("valence")(request)
             val tracks = tracksRepository.getTracksWithAudioFeatures(valence = valence?.toDouble() ?: 0.0)
 
-            Response(OK).with(TracksWithAudioFeatures.format of TracksWithAudioFeatures(tracks))
+            Response(OK).with(EnrichedTracksWithAudioFeatures.format of EnrichedTracksWithAudioFeatures(tracks))
         }
     )
 )

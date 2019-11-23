@@ -13,16 +13,17 @@ import org.spekframework.spek2.style.specification.describe
 
 object SearchTracksTest : Spek({
 
-    val mockTrackWithAudioFeatures = mockk<TrackWithAudioFeatures>()
-    every { mockTrackWithAudioFeatures.id } returns "1"
-    every { mockTrackWithAudioFeatures.valence } returns 0.0
-    every { mockTrackWithAudioFeatures.tempo } returns 100.0
+    val mockEnrichedTrackWithAudioFeatures = mockk<EnrichedTrackWithAudioFeatures>()
+    every { mockEnrichedTrackWithAudioFeatures.id } returns "1"
+    every { mockEnrichedTrackWithAudioFeatures.name } returns "trackName"
+    every { mockEnrichedTrackWithAudioFeatures.valence } returns 0.0
+    every { mockEnrichedTrackWithAudioFeatures.tempo } returns 100.0
 
     val mockTracksRepository = mockk<TracksRepository>()
     every { mockTracksRepository.listTracksLinks(any()) } returns mockk()
     every { mockTracksRepository.getTracks(any(), any(), any())} returns mockk()
     every { mockTracksRepository.playlistFinder(any(), any(), any()) } returns mockk()
-    every { mockTracksRepository.getTracksWithAudioFeatures(any(), any()) } returns listOf(mockTrackWithAudioFeatures)
+    every { mockTracksRepository.getTracksWithAudioFeatures(any(), any()) } returns listOf(mockEnrichedTrackWithAudioFeatures)
 
     val endpoint = searchTracks(mockTracksRepository)
 

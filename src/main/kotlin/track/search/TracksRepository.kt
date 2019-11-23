@@ -53,17 +53,19 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         tracks: List<Track> = getTracks(),
         valence: Double = 0.0,
         spotifyHttpHandler: HttpHandler = client
-    ): List<TrackWithAudioFeatures> {
-        val tracksWithAudioFeatures = mutableListOf<TrackWithAudioFeatures>()
+    ): List<EnrichedTrackWithAudioFeatures> {
+        val enrichedTracksWithAudioFeatures = mutableListOf<EnrichedTrackWithAudioFeatures>()
 
         tracks.map { track ->
             val response = spotifyHttpHandler(
                 Request(GET, "https://api.spotify.com/v1/audio-features/${track.id}?access_token=$token")
             )
-            tracksWithAudioFeatures += deserializeAudioFeaturesResponse(response)
+
+            val trackWithAudioFeatures = deserializeAudioFeaturesResponse(response)
+            enrichedTracksWithAudioFeatures += trackWithAudioFeatures.toEnrichedTrackWithAudioFeatures(track.name)
         }
 
-        return tracksWithAudioFeatures.filter { it.valence > valence }
+        return enrichedTracksWithAudioFeatures.filter { it.valence > valence }
     }
 
     internal fun listTracksLinks(playlists: Response): List<String>? {
@@ -125,10 +127,26 @@ internal data class TrackWithAudioFeatures(
     val id: String,
     val valence: Double,
     val tempo: Double
+) {
+    fun toEnrichedTrackWithAudioFeatures(name: String): EnrichedTrackWithAudioFeatures {
+        return EnrichedTrackWithAudioFeatures(
+            id = this.id,
+            name = name,
+            valence = this.valence,
+            tempo = this.tempo
+        )
+    }
+}
+
+internal data class EnrichedTrackWithAudioFeatures(
+    val id: String,
+    val name: String,
+    val valence: Double,
+    val tempo: Double
 )
 
-internal data class TracksWithAudioFeatures(val tracksWithAudioFeatures: List<TrackWithAudioFeatures>) {
+internal data class EnrichedTracksWithAudioFeatures(val enrichedTracksWithAudioFeatures: List<EnrichedTrackWithAudioFeatures>) {
     companion object {
-        val format = Body.auto<TracksWithAudioFeatures>().toLens()
+        val format = Body.auto<EnrichedTracksWithAudioFeatures>().toLens()
     }
 }
