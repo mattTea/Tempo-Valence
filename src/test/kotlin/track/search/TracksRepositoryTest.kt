@@ -48,11 +48,13 @@ object TracksRepositoryTest : Spek({
             }
 
         it("should return OK (200)") {
-            assertThat(tracksRepository.playlistFinder(
-                playlistLimit = playlistLimit,
-                offset = 0,
-                spotifyHttpHandler = fakeSpotify
-            ).status).isEqualTo(OK)
+            assertThat(
+                tracksRepository.playlistFinder(
+                    playlistLimit = playlistLimit,
+                    offset = 0,
+                    spotifyHttpHandler = fakeSpotify
+                ).status
+            ).isEqualTo(OK)
         }
 
         it("should return Playlists for user 'mattthompson34") {
@@ -132,11 +134,10 @@ object TracksRepositoryTest : Spek({
     }
 
     describe("getTracks()") {
-        // TODO should mock call and responses to individual tracksLinks
         val fakePlaylistFinderResponse = """{
                 "items": [
-                    {"tracks": {"href": "https://api.spotify.com/v1/playlists/5SBdn3LK0VTTHx4daMNFCa/tracks"} },
-                    {"tracks": {"href": "https://api.spotify.com/v1/playlists/1UwtzP4yehAaJjEn1NQcOe/tracks"} }
+                    {"tracks": {"href": "http://firstPlaylistTracks"} },
+                    {"tracks": {"href": "http://secondPlaylistTracks"} }
                 ]
             }"""
 
@@ -144,19 +145,22 @@ object TracksRepositoryTest : Spek({
             .body(fakePlaylistFinderResponse)
             .header("Content-Type", "application/json")
 
+        val fakeSpotifyGetTracksResponse = """{"items": [{"track": {"id": "trackId"}}]}"""
+
         it("should return a list") {
             assertThat(tracksRepository.getTracks(
                 playlists = fakePlaylistFinder,
-                tracksLimit = tracksLimit
+                tracksLimit = tracksLimit,
+                spotifyHttpHandler = { Response(OK).body(fakeSpotifyGetTracksResponse) }
             )).isInstanceOf(List::class.java)
         }
 
         it("should return list containing track ids") {
-            val aTrackId = "7di4QTqNCZjX4JUFKhWQsr"
-            val anotherTrackId = "5M3xy3FI55IhNEDSiB2aTn"
-
-            assertThat(tracksRepository.getTracks(playlists = fakePlaylistFinder, tracksLimit = tracksLimit))
-                .containsAll(aTrackId, anotherTrackId)
+            assertThat(tracksRepository.getTracks(
+                playlists = fakePlaylistFinder,
+                tracksLimit = tracksLimit,
+                spotifyHttpHandler = { Response(OK).body(fakeSpotifyGetTracksResponse) }
+            )).containsAll("trackId", "trackId")
         }
     }
 
@@ -188,11 +192,13 @@ object TracksRepositoryTest : Spek({
         }
 
         it("should return a filtered list based on valence") {
-            assertThat(tracksRepository.getTracksWithAudioFeatures(
-                trackIds = listOfTrackIds,
-                spotifyHttpHandler = { Response(OK).body(fakeSpotifyAudioFeaturesResponse) },
-                valence = 0.7
-            )).isEqualTo(listOf(track1))
+            assertThat(
+                tracksRepository.getTracksWithAudioFeatures(
+                    trackIds = listOfTrackIds,
+                    spotifyHttpHandler = { Response(OK).body(fakeSpotifyAudioFeaturesResponse) },
+                    valence = 0.7
+                )
+            ).isEqualTo(listOf(track1))
         }
     }
 })
