@@ -16,6 +16,7 @@ object SearchTracksTest : Spek({
     val mockEnrichedTrackWithAudioFeatures = mockk<EnrichedTrackWithAudioFeatures>()
     every { mockEnrichedTrackWithAudioFeatures.id } returns "1"
     every { mockEnrichedTrackWithAudioFeatures.name } returns "trackName"
+    every { mockEnrichedTrackWithAudioFeatures.artist } returns "artistName"
     every { mockEnrichedTrackWithAudioFeatures.valence } returns 0.0
     every { mockEnrichedTrackWithAudioFeatures.tempo } returns 100.0
 

@@ -9,7 +9,6 @@ import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
 object TracksRepositoryTest : Spek({
-    // TODO should mock a session to pass in to TracksRepository() to isolate
     val tracksRepository = TracksRepository()
     val playlistLimit = 2
     val tracksLimit = 3
@@ -86,6 +85,7 @@ object TracksRepositoryTest : Spek({
         val enrichedTrackWithAudioFeatures = EnrichedTrackWithAudioFeatures(
             id = "trackId",
             name = "trackName",
+            artist = "artistName",
             valence = 0.8,
             tempo = 100.0
         )

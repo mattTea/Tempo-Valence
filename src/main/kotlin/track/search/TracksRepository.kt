@@ -62,7 +62,7 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
             )
 
             val trackWithAudioFeatures = deserializeAudioFeaturesResponse(response)
-            enrichedTracksWithAudioFeatures += trackWithAudioFeatures.toEnrichedTrackWithAudioFeatures(track.name)
+            enrichedTracksWithAudioFeatures += trackWithAudioFeatures.toEnrichedTrackWithAudioFeatures(track.name, track.artists[0].name)
         }
 
         return enrichedTracksWithAudioFeatures.filter { it.valence > valence }
@@ -118,17 +118,13 @@ internal data class TrackList(
 
 internal data class TrackItem(val track: Track)
 
-//internal data class ArtistList(
-//    val artists: List<Artist>?
-//)
-
 internal data class Artist(
     val name: String
 )
 
 internal data class Track(
     val id: String,
-    val artists: List<Artist>?,
+    val artists: List<Artist>,
     val name: String
 )
 
@@ -137,10 +133,11 @@ internal data class TrackWithAudioFeatures(
     val valence: Double,
     val tempo: Double
 ) {
-    fun toEnrichedTrackWithAudioFeatures(name: String): EnrichedTrackWithAudioFeatures {
+    fun toEnrichedTrackWithAudioFeatures(name: String, artist: String): EnrichedTrackWithAudioFeatures {
         return EnrichedTrackWithAudioFeatures(
             id = this.id,
             name = name,
+            artist = artist,
             valence = this.valence,
             tempo = this.tempo
         )
@@ -150,6 +147,7 @@ internal data class TrackWithAudioFeatures(
 internal data class EnrichedTrackWithAudioFeatures(
     val id: String,
     val name: String,
+    val artist: String,
     val valence: Double,
     val tempo: Double
 )
