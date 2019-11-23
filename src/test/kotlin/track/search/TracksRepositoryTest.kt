@@ -161,32 +161,38 @@ object TracksRepositoryTest : Spek({
     }
 
     describe("getTracksWithAudioFeatures()") {
-        val listOfTrackIds = listOf("7di4QTqNCZjX4JUFKhWQsr", "5M3xy3FI55IhNEDSiB2aTn")
+        val fakeSpotifyAudioFeaturesResponse = """{"id":"firstTrackId","valence":0.8,"tempo":100.0}"""
+
+        val listOfTrackIds = listOf("firstTrackId")
 
         val track1 = TrackWithAudioFeatures(
-            id = "7di4QTqNCZjX4JUFKhWQsr",
-            valence = 0.878,
-            tempo = 117.024
+            id = "firstTrackId",
+            valence = 0.8,
+            tempo = 100.0
         )
 
-        val track2 = TrackWithAudioFeatures(
-            id = "5M3xy3FI55IhNEDSiB2aTn",
-            valence = 0.535,
-            tempo = 126.019
-        )
-
-        val tracksWithAudioFeatures = listOf(track1, track2)
+        val tracksWithAudioFeatures = listOf(track1)
 
         it("should return a list") {
-            assertThat(tracksRepository.getTracksWithAudioFeatures(listOfTrackIds)).isInstanceOf(List::class.java)
+            assertThat(tracksRepository.getTracksWithAudioFeatures(
+                trackIds = listOfTrackIds,
+                spotifyHttpHandler = { Response(OK).body(fakeSpotifyAudioFeaturesResponse) }
+            )).isInstanceOf(List::class.java)
         }
 
         it("should return a list of TracksWithAudioFeatures") {
-            assertThat(tracksRepository.getTracksWithAudioFeatures(listOfTrackIds)).isEqualTo(tracksWithAudioFeatures)
+            assertThat(tracksRepository.getTracksWithAudioFeatures(
+                trackIds = listOfTrackIds,
+                spotifyHttpHandler = { Response(OK).body(fakeSpotifyAudioFeaturesResponse) }
+            )).isEqualTo(tracksWithAudioFeatures)
         }
 
         it("should return a filtered list based on valence") {
-            assertThat(tracksRepository.getTracksWithAudioFeatures(listOfTrackIds, 0.7)).isEqualTo(listOf(track1))
+            assertThat(tracksRepository.getTracksWithAudioFeatures(
+                trackIds = listOfTrackIds,
+                spotifyHttpHandler = { Response(OK).body(fakeSpotifyAudioFeaturesResponse) },
+                valence = 0.7
+            )).isEqualTo(listOf(track1))
         }
     }
 })

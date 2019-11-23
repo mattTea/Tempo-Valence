@@ -51,12 +51,13 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
 
     internal fun getTracksWithAudioFeatures(
         trackIds: List<String> = getTracks(),
-        valence: Double = 0.0
+        valence: Double = 0.0,
+        spotifyHttpHandler: HttpHandler = client
     ): List<TrackWithAudioFeatures> {
         val tracksWithAudioFeatures = mutableListOf<TrackWithAudioFeatures>()
 
         trackIds.map {trackId ->
-            val response = client(
+            val response = spotifyHttpHandler(
                 Request(GET, "https://api.spotify.com/v1/audio-features/$trackId?access_token=$token")
             )
             tracksWithAudioFeatures += deserializeAudioFeaturesResponse(response)
