@@ -43,7 +43,7 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
 
         tracksLinks?.map { tracksLink ->
             val response = spotifyHttpHandler(Request(GET, "$tracksLink?access_token=$token&limit=$tracksLimit"))
-            deserializeTracksResponse(response).items?.map { tracks += Track(it.track.id, it.track.name) }
+            deserializeTracksResponse(response).items?.map { tracks += Track(it.track.id, it.track.artists, it.track.name) }
         }
 
         return tracks
@@ -118,8 +118,17 @@ internal data class TrackList(
 
 internal data class TrackItem(val track: Track)
 
+//internal data class ArtistList(
+//    val artists: List<Artist>?
+//)
+
+internal data class Artist(
+    val name: String
+)
+
 internal data class Track(
     val id: String,
+    val artists: List<Artist>?,
     val name: String
 )
 

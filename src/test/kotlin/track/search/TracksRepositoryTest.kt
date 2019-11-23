@@ -69,19 +69,19 @@ object TracksRepositoryTest : Spek({
             )).isInstanceOf(List::class.java)
         }
 
-        it("should return list of tracks with trackId with trackName") {
+        it("should return list of tracks with trackId, trackName and artist") {
             assertThat(tracksRepository.getTracks(
                 playlists = fakePlaylistFinder,
                 tracksLimit = tracksLimit,
                 spotifyHttpHandler = { Response(OK).body(fakeSpotifyGetTracksResponseWithNameAndArtist) }
-            )).isEqualTo(listOf(Track("trackId", "trackName")))
+            )).isEqualTo(listOf(Track("trackId", listOf(Artist("artistName")), "trackName")))
         }
     }
 
     describe("getTracksWithAudioFeatures()") {
         val fakeSpotifyAudioFeaturesResponse = """{"id":"trackId","valence":0.8,"tempo":100.0}"""
 
-        val listOfTracks = listOf(Track("trackId", "trackName"))
+        val listOfTracks = listOf(Track("trackId", listOf(Artist("artistName")), "trackName"))
 
         val enrichedTrackWithAudioFeatures = EnrichedTrackWithAudioFeatures(
             id = "trackId",
@@ -148,18 +148,38 @@ object TracksRepositoryTest : Spek({
     describe("deserializeTracksResponse()") {
         it("should return a list of Track ids") {
             val fakeTracksFinderResponse = """{
-                "items": [
-                    {"track": {"id": "firstTrackId", "name": "firstTrackName"} },
-                    {"track": {"id": "secondTrackId", "name": "secondTrackName"} }
-                ]
+              "items": [
+                {
+                  "track": {
+                    "artists": [
+                      {
+                        "name": "firstArtistName"
+                      }
+                    ],
+                    "id": "firstTrackId",
+                    "name": "firstTrackName"
+                  }
+                },
+                {
+                  "track": {
+                    "artists": [
+                      {
+                        "name": "secondArtistName"
+                      }
+                    ],
+                    "id": "secondTrackId",
+                    "name": "secondTrackName"
+                  }
+                }
+              ]
             }"""
 
             val fakeTracksFinder = Response(OK)
                 .body(fakeTracksFinderResponse)
                 .header("Content-Type", "application/json")
 
-            val firstTrack = TrackItem(Track("firstTrackId", "firstTrackName"))
-            val secondTrack = TrackItem(Track("secondTrackId", "secondTrackName"))
+            val firstTrack = TrackItem(Track("firstTrackId", listOf(Artist("firstArtistName")),"firstTrackName"))
+            val secondTrack = TrackItem(Track("secondTrackId", listOf(Artist("secondArtistName")), "secondTrackName"))
             val deserializedTracks = TrackList(listOf(firstTrack, secondTrack))
 
             assertThat(tracksRepository.deserializeTracksResponse(fakeTracksFinder)).isEqualTo(deserializedTracks)
