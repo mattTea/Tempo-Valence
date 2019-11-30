@@ -1,7 +1,7 @@
 TempoValence
 ============
 
-**Repo has moved to [GitLab](https://jl.githost.io/mattTea/tempo-valence) to make use of CI pipeline**
+**N.B. Repo has moved to [GitLab](https://jl.githost.io/mattTea/tempo-valence) to make use of CI pipeline**
 
 
 Search Spotify's api for music based on its Tempo (beats per minute) and Valence (positivity or happiness)
