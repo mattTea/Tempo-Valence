@@ -4,7 +4,6 @@ import org.http4k.client.OkHttp
 import org.http4k.core.Method.POST
 import org.http4k.core.Request
 import org.http4k.core.Response
-import track.search.EnvironmentKeys.CLIENT_KEY
 
 internal class SpotifySession {
     fun getAccessToken(): Response {
@@ -12,7 +11,7 @@ internal class SpotifySession {
         val request = Request(POST, "https://accounts.spotify.com/api/token")
             .query("grant_type", "client_credentials")
             .header("Content-Type", "application/x-www-form-urlencoded")
-            .header("Authorization", "Basic $CLIENT_KEY")
+            .header("Authorization", "Basic ${System.getenv("CLIENT_KEY")}")
 
         val client = OkHttp()
 

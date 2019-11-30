@@ -10,6 +10,7 @@ build:
   variables:
     CLIENT_KEY: $SPOTIFY_CLIENT_KEY
   script:
+    - export CLIENT_KEY="$CLIENT_KEY"
     - gradle clean build
   only:
     - master

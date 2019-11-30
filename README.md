@@ -17,15 +17,22 @@ Search Spotify's api for music based on its Tempo (beats per minute) and Valence
 3. Run the following from the command line...
 
     ```bash
-    ./gradlew run
+    runlocal.sh
     ```
     
-    or
+    Note - `runlocal.sh` is not included in the public repo as it contains private environment variables
+    - To set locally and run app, use the following...
     
     ```bash
-    gradle run
+    export CLIENT_KEY=private-key
+    
+    ./gradlew run
     ```
 
+    To run tests from within IntelliJ the `System.getenv("VARIABLE_NAME")` probably won't work.
+    
+    So, add CLIENT_KEY env var to the project run configuration -> Run > Edit Configurations... > Environment variables: (Browse... button)
+    
 ------
 
 ## Technologies I plan to use
@@ -44,23 +51,10 @@ Structure code similar to merchandiser...
 
 - Methods that handle initial http request (from UI, eg)
 - Methods that deal with the external api/client http requests
-- Try to use repository pattern
+- Use repository pattern
 
 ------
 
 ## Spotify api
 
 Link to spotify [api console](https://developer.spotify.com/documentation/web-api/)
-
-
-Possible future link to song lyrics too with [Lyrics ovh](https://lyricsovh.docs.apiary.io/#)
-    - Pretty basic
-    - (No auth)
-
-------
-
-## Useful links
-
-https://github.com/thelinmichael/spotify-web-api-java
-
-https://medium.com/@elfanos/spotify-api-with-kotlin-react-and-redux-b1e23bb39b8c
