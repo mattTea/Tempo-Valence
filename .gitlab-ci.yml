@@ -7,12 +7,9 @@ stages:
 build:
   <<: *gradle-image
   stage: build
+  variables:
+    CLIENT_KEY: $SPOTIFY_CLIENT_KEY
   script:
     - gradle clean build
-  artifacts:
-    when:
-      on_failure
-    paths:
-      - build/reports/
   only:
     - master
