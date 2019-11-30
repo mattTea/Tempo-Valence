@@ -1,0 +1,18 @@
+stages:
+  - build
+
+.gradle-image: &gradle-image
+  image: gradle:5.5-jdk12
+
+build:
+  <<: *gradle-image
+  stage: build
+  script:
+    - gradle clean build
+  artifacts:
+    when:
+      on_failure
+    paths:
+      - build/reports/
+  only:
+    - master
