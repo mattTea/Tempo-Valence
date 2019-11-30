@@ -17,7 +17,7 @@ Search Spotify's api for music based on its Tempo (beats per minute) and Valence
 3. Run the following from the command line...
 
     ```bash
-    runlocal.sh
+    ./runlocal.sh
     ```
     
     Note - `runlocal.sh` is not included in the public repo as it contains private environment variables
@@ -35,13 +35,14 @@ Search Spotify's api for music based on its Tempo (beats per minute) and Valence
     
 ------
 
-## Technologies I plan to use
+## Technologies
 
-- Kotlin
-- http4k (http framework)
-- result4k (for exception handling)
-- OAuth
-- (GCP, Kubernetes, Docker and an automated CI pipeline)
+- Kotlin - used
+- http4k (http framework) - used
+- result4k (for exception handling) - planned
+- OAuth - planned
+- Gitlab CI - used
+- GCP, Kubernetes, and Docker - planned
 
 ------
 
