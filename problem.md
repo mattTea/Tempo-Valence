@@ -88,6 +88,11 @@ where `access_token` is replaced by new access token
     - Hosting of app (api) - containerisation of app and management in k8s?
     - (https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app)
     
+    Things to think about...
+    - Endpoint needs a url to be accessed on
+    - (https://cloud.google.com/kubernetes-engine/docs/tutorials/configuring-domain-name-static-ip)
+    - Create docker image -> just in the pipeline or elsewhere? Maybe create one locally first?
+    
         To package and deploy your application on GKE, you must:
         
         - Package your app into a Docker image
@@ -101,6 +106,6 @@ where `access_token` is replaced by new access token
     
     - Authentication
 
-5. CI pipeline (gitlab)
+5. CI pipeline (gitlab) - first build stage set up
 
-6. Authorise api
+6. Authorise api (cloud endpoints, with JWT etc)
