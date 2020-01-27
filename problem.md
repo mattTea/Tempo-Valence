@@ -58,7 +58,7 @@ where `access_token` is replaced by new access token
 2. Way to run app locally...
 
 ```bash
-./gradle run
+./runlocal.sh
 ```
     
 3. New (4th Nov 2019) usage before continuing with hosting, etc
