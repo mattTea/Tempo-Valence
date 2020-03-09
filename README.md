@@ -33,6 +33,11 @@ Search Spotify's api for music based on its Tempo (beats per minute) and Valence
     
     So, add CLIENT_KEY env var to the project run configuration -> Run > Edit Configurations... > Environment variables: (Browse... button)
     
+    Visit the following...
+    - `http://localhost:9000` -> route of app
+    - `http://localhost:9000/tracks` -> selection of tracks without valence query param
+    - `http://localhost:9000/tracks?valence=0.7` -> selection of tracks above valence query param
+    
 ------
 
 ## Technologies
@@ -48,7 +53,7 @@ Search Spotify's api for music based on its Tempo (beats per minute) and Valence
 
 ## Structure
 
-Structure code similar to merchandiser...
+Structure of code...
 
 - Methods that handle initial http request (from UI, eg)
 - Methods that deal with the external api/client http requests

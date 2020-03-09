@@ -66,7 +66,7 @@ where `access_token` is replaced by new access token
 - `playlistFinder()` (could randomise an offset to call nth 25 playlists)
 - `getTracks()` listTracksLinks (could return randomised 100 tracks) 
 - `getTracksWithAudioFeatures()` (could return 3 random tracks over valence value)
-    - also return names of tracks, artists, valence values and tempo for each
+    - also return names of tracks, artists, valence values and tempo for each [DONE]
     
     - make call to "https://api.spotify.com/v1/tracks/$trackId" for first one
     - get item.name & item.artists[0].name and combine into TrackWithAudioFeatures class (or new class)
