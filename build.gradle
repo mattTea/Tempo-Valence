@@ -1,6 +1,8 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.50'
     id 'application'
+    id("com.github.johnrengelman.shadow") version "5.2.0"
+    id 'com.google.cloud.tools.jib' version '2.1.0'
 }
 
 version '1.0-SNAPSHOT'
@@ -44,4 +46,20 @@ compileTestKotlin {
 
 application {
     mainClassName = 'track.search.MainKt'
+}
+
+jib {
+    container {
+        mainClass = application.mainClassName
+        environment = [CLIENT_KEY:System.getenv("CLIENT_KEY")]
+        ports = ['8000']
+    }
+    from {
+//        image = "azul/zulu-openjdk-alpine:11"
+        image = "openjdk:11"
+    }
+    to {
+//        image = "eu.gcr.io/jl-container-images/tempo-valence:latest"
+        image = "matttea/matttea-images/tempo-valence:latest"
+    }
 }
