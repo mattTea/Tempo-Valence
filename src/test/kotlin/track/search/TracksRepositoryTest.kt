@@ -177,7 +177,7 @@ object TracksRepositoryTest : Spek({
 
             val firstTrack = TrackItem(Track("firstTrackId", listOf(Artist("firstArtistName")),"firstTrackName"))
             val secondTrack = TrackItem(Track("secondTrackId", listOf(Artist("secondArtistName")), "secondTrackName"))
-            val deserializedTracks = TrackList(listOf(firstTrack, secondTrack))
+            val deserializedTracks = TrackItems(listOf(firstTrack, secondTrack))
 
             assertThat(tracksRepository.deserializeTracksResponse(fakeTracksFinder)).isEqualTo(deserializedTracks)
         }

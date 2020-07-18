@@ -13,7 +13,7 @@ import org.http4k.format.Jackson.auto
 import kotlin.random.Random
 
 internal class TracksRepository(session: SpotifySession = SpotifySession()) {
-    // TODO refactor - lots of duplication in deserialisation methods and Track classes
+    // TODO lots of duplication in Track classes
     private val client = OkHttp()
 
     private val token = jacksonObjectMapper()
@@ -68,36 +68,29 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
             .items?.map { it.tracks.href }
     }
 
-    internal fun deserializePlaylistResponse(playlists: Response): Playlists {
-        return jacksonObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .readValue(
-                playlists.bodyString(),
-                Playlists::class.java
-            )
-    }
+    fun deserializePlaylistResponse(playlists: Response): Playlists =
+        deserializeConfig().readValue(
+            playlists.bodyString(),
+            Playlists::class.java
+        )
 
-    internal fun deserializeTracksResponse(tracks: Response): TrackList {
-        return jacksonObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .readValue(
-                tracks.bodyString(),
-                TrackList::class.java
-            )
-    }
+    fun deserializeTracksResponse(tracks: Response): TrackItems =
+        deserializeConfig().readValue(
+            tracks.bodyString(),
+            TrackItems::class.java
+        )
 
-    internal fun deserializeAudioFeaturesResponse(track: Response): TrackWithAudioFeatures {
-        return jacksonObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .readValue(
-                track.bodyString(),
-                TrackWithAudioFeatures::class.java
-            )
-    }
+    fun deserializeAudioFeaturesResponse(track: Response): TrackWithAudioFeatures =
+        deserializeConfig().readValue(
+            track.bodyString(),
+            TrackWithAudioFeatures::class.java
+        )
 }
+
+private fun deserializeConfig() =
+    jacksonObjectMapper()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
 
 internal data class Playlists(
     val items: List<Playlist>?
@@ -107,7 +100,7 @@ internal data class Playlist(val tracks: PlaylistTracksLink)
 
 internal data class PlaylistTracksLink(val href: String)
 
-internal data class TrackList(
+internal data class TrackItems(
     val items: List<TrackItem>?
 )
 
