@@ -7,6 +7,15 @@ import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
+import track.search.model.Artist
+import track.search.model.EnrichedTrackWithAudioFeatures
+import track.search.model.Playlist
+import track.search.model.PlaylistTracksLink
+import track.search.model.Playlists
+import track.search.model.Track
+import track.search.model.TrackItem
+import track.search.model.TrackItems
+import track.search.model.TrackWithAudioFeatures
 
 object TracksRepositoryTest : Spek({
     val tracksRepository = TracksRepository()

@@ -10,6 +10,7 @@ import org.http4k.core.Request
 import org.http4k.core.Status.Companion.OK
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
+import track.search.model.EnrichedTrackWithAudioFeatures
 
 object SearchTracksTest : Spek({
 

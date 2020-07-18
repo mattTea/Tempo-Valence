@@ -4,12 +4,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.http4k.client.OkHttp
-import org.http4k.core.Body
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
-import org.http4k.format.Jackson.auto
+import track.search.model.EnrichedTrackWithAudioFeatures
+import track.search.model.Playlists
+import track.search.model.Track
+import track.search.model.TrackItems
+import track.search.model.TrackWithAudioFeatures
 import kotlin.random.Random
 
 internal class TracksRepository(session: SpotifySession = SpotifySession()) {
@@ -91,57 +94,3 @@ private fun deserializeConfig() =
     jacksonObjectMapper()
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-
-internal data class Playlists(
-    val items: List<Playlist>?
-)
-
-internal data class Playlist(val tracks: PlaylistTracksLink)
-
-internal data class PlaylistTracksLink(val href: String)
-
-internal data class TrackItems(
-    val items: List<TrackItem>?
-)
-
-internal data class TrackItem(val track: Track)
-
-internal data class Artist(
-    val name: String
-)
-
-internal data class Track(
-    val id: String,
-    val artists: List<Artist>,
-    val name: String
-)
-
-internal data class TrackWithAudioFeatures(
-    val id: String,
-    val valence: Double,
-    val tempo: Double
-) {
-    fun toEnrichedTrackWithAudioFeatures(name: String, artist: String): EnrichedTrackWithAudioFeatures {
-        return EnrichedTrackWithAudioFeatures(
-            id = this.id,
-            name = name,
-            artist = artist,
-            valence = this.valence,
-            tempo = this.tempo
-        )
-    }
-}
-
-internal data class EnrichedTrackWithAudioFeatures(
-    val id: String,
-    val name: String,
-    val artist: String,
-    val valence: Double,
-    val tempo: Double
-)
-
-internal data class EnrichedTracksWithAudioFeatures(val enrichedTracksWithAudioFeatures: List<EnrichedTrackWithAudioFeatures>) {
-    companion object {
-        val format = Body.auto<EnrichedTracksWithAudioFeatures>().toLens()
-    }
-}

@@ -10,6 +10,7 @@ import org.http4k.filter.ServerFilters.CatchLensFailure
 import org.http4k.lens.Query
 import org.http4k.routing.bind
 import org.http4k.routing.routes
+import track.search.model.EnrichedTracksWithAudioFeatures
 
 internal fun searchTracks(tracksRepository: TracksRepository): HttpHandler = CatchLensFailure.then(
     routes(
