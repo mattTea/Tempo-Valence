@@ -11,7 +11,6 @@ import org.spekframework.spek2.style.specification.describe
 object TracksRepositoryTest : Spek({
     val tracksRepository = TracksRepository()
     val playlistLimit = 2
-    val tracksLimit = 3
 
     describe("playlistFinder()") {
         val fakeSpotifyPlaylistsResponse = """{"items": [{"tracks": {"href": "http://playlistTracks"}}]}"""
@@ -63,7 +62,6 @@ object TracksRepositoryTest : Spek({
         it("should return a list") {
             assertThat(tracksRepository.getTracks(
                 playlists = fakePlaylistFinder,
-                tracksLimit = tracksLimit,
                 spotifyHttpHandler = { Response(OK).body(fakeSpotifyGetTracksResponseWithNameAndArtist) }
             )).isInstanceOf(List::class.java)
         }
@@ -71,7 +69,6 @@ object TracksRepositoryTest : Spek({
         it("should return list of tracks with trackId, trackName and artist") {
             assertThat(tracksRepository.getTracks(
                 playlists = fakePlaylistFinder,
-                tracksLimit = tracksLimit,
                 spotifyHttpHandler = { Response(OK).body(fakeSpotifyGetTracksResponseWithNameAndArtist) }
             )).isEqualTo(listOf(Track("trackId", listOf(Artist("artistName")), "trackName")))
         }

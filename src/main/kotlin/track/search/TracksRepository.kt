@@ -14,7 +14,7 @@ import kotlin.random.Random
 
 internal class TracksRepository(session: SpotifySession = SpotifySession()) {
     // TODO refactor - lots of duplication in deserialisation methods and Track classes
-    val client = OkHttp()
+    private val client = OkHttp()
 
     private val token = jacksonObjectMapper()
         .readValue(
@@ -27,26 +27,27 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
         offset: Int = Random.nextInt(0, 100),
         spotifyHttpHandler: HttpHandler = client
     ): Response {
-        return spotifyHttpHandler(Request(
-            method = GET,
-            uri = "https://api.spotify.com/v1/users/mattthompson34/playlists?access_token=$token&limit=$playlistLimit&offset=$offset"
-        ))
+        return spotifyHttpHandler(
+            Request(
+                method = GET,
+                uri = "https://api.spotify.com/v1/users/mattthompson34/playlists?access_token=$token&limit=$playlistLimit&offset=$offset"
+            )
+        )
     }
 
     internal fun getTracks(
         playlists: Response = playlistFinder(),
         tracksLinks: List<String>? = listTracksLinks(playlists),
+//        fields: String = "tracks.items(track(name,id,artists(name)))",
         tracksLimit: Int = 3,
         spotifyHttpHandler: HttpHandler = client
     ): List<Track> {
-        val tracks = mutableListOf<Track>()
-
-        tracksLinks?.map { tracksLink ->
-            val response = spotifyHttpHandler(Request(GET, "$tracksLink?access_token=$token&limit=$tracksLimit"))
-            deserializeTracksResponse(response).items?.map { tracks += Track(it.track.id, it.track.artists, it.track.name) }
-        }
-
-        return tracks
+        return tracksLinks?.flatMap { tracksLink ->
+            deserializeTracksResponse(
+                spotifyHttpHandler(Request(GET, "$tracksLink?access_token=$token&limit=$tracksLimit"))
+            ).items?.map {
+                Track(it.track.id, it.track.artists, it.track.name) } ?: emptyList()
+        } ?: emptyList()
     }
 
     internal fun getTracksWithAudioFeatures(
@@ -62,7 +63,10 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
             )
 
             val trackWithAudioFeatures = deserializeAudioFeaturesResponse(response)
-            enrichedTracksWithAudioFeatures += trackWithAudioFeatures.toEnrichedTrackWithAudioFeatures(track.name, track.artists[0].name)
+            enrichedTracksWithAudioFeatures += trackWithAudioFeatures.toEnrichedTrackWithAudioFeatures(
+                track.name,
+                track.artists[0].name
+            )
         }
 
         return enrichedTracksWithAudioFeatures.filter { it.valence > valence }
