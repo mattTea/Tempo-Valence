@@ -38,39 +38,30 @@ internal class TracksRepository(session: SpotifySession = SpotifySession()) {
     internal fun getTracks(
         playlists: Response = playlistFinder(),
         tracksLinks: List<String>? = listTracksLinks(playlists),
-//        fields: String = "tracks.items(track(name,id,artists(name)))",
+        // fields: String = "tracks.items(track(name,id,artists(name)))",
         tracksLimit: Int = 3,
         spotifyHttpHandler: HttpHandler = client
-    ): List<Track> {
-        return tracksLinks?.flatMap { tracksLink ->
+    ): List<Track> =
+        tracksLinks?.flatMap { tracksLink ->
             deserializeTracksResponse(
                 spotifyHttpHandler(Request(GET, "$tracksLink?access_token=$token&limit=$tracksLimit"))
             ).items?.map {
-                Track(it.track.id, it.track.artists, it.track.name) } ?: emptyList()
+                Track(it.track.id, it.track.artists, it.track.name)
+            } ?: emptyList()
         } ?: emptyList()
-    }
 
     internal fun getTracksWithAudioFeatures(
         tracks: List<Track> = getTracks(),
         valence: Double = 0.0,
         spotifyHttpHandler: HttpHandler = client
-    ): List<EnrichedTrackWithAudioFeatures> {
-        val enrichedTracksWithAudioFeatures = mutableListOf<EnrichedTrackWithAudioFeatures>()
-
+    ): List<EnrichedTrackWithAudioFeatures> =
         tracks.map { track ->
-            val response = spotifyHttpHandler(
-                Request(GET, "https://api.spotify.com/v1/audio-features/${track.id}?access_token=$token")
-            )
-
-            val trackWithAudioFeatures = deserializeAudioFeaturesResponse(response)
-            enrichedTracksWithAudioFeatures += trackWithAudioFeatures.toEnrichedTrackWithAudioFeatures(
-                track.name,
-                track.artists[0].name
-            )
-        }
-
-        return enrichedTracksWithAudioFeatures.filter { it.valence > valence }
-    }
+            deserializeAudioFeaturesResponse(
+                spotifyHttpHandler(
+                    Request(GET, "https://api.spotify.com/v1/audio-features/${track.id}?access_token=$token")
+                )
+            ).toEnrichedTrackWithAudioFeatures(track.name, track.artists[0].name)
+        }.filter { it.valence > valence }
 
     internal fun listTracksLinks(playlists: Response): List<String>? {
         return deserializePlaylistResponse(playlists)
